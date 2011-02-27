@@ -3,15 +3,17 @@ var map, state, player, default_actions, preload_assets, key_bindings, canvas;
 $(document).ready(function(){
 	$LAB
 		.script("js/Map.js")
+		.script("js/Assets.js")
 		.wait(function() {
+			console.log("Setting up...");
+			
 			const KEY_DOWN = 40;
 			const KEY_UP = 38;
 			const KEY_LEFT = 37;
 			const KEY_RIGHT = 39;
 			
-			map = new Map(9, 9);
-			key_bindings = [];
 			canvas = document.getElementById("map");
+			map = new Map(9, 9);
 			
 			default_actions = {
 				'Inventory': function() {
@@ -19,20 +21,6 @@ $(document).ready(function(){
 				}
 			};
 			
-			state = {
-				'level': ''
-			};
-			
-			player = {
-				'name': '',
-				'energy': '',
-				'level': '',
-				'xp': '',
-				'str': '',
-				'x': 0,
-				'y': 0,
-				'sprite': loadImage("./img/player.png")
-			};
 			
 			// $('#map').click(function() {
 			// 		document.addEventListener("click", function() {
@@ -42,17 +30,35 @@ $(document).ready(function(){
 			// 		console.log();
 			// 	});
 			
+			key_bindings = [];
 			$(document).keydown(handleKeyPress);
 			bindKey(KEY_DOWN, function() { movePlayerTo(player.x, wrapValue(player.y + 1, 0, 8)); });
 			bindKey(KEY_UP, function() { movePlayerTo(player.x, wrapValue(player.y - 1, 0, 8)); });
 			bindKey(KEY_RIGHT, function() { movePlayerTo(wrapValue(player.x + 1, 0, 8), player.y); });
 			bindKey(KEY_LEFT, function() { movePlayerTo(wrapValue(player.x - 1, 0, 8), player.y); });
 			
-			init();
+			Assets.load(init);
 		});
 });
 
 function init() {
+	console.log("Initializing...");
+	
+	state = {
+		'level': ''
+	};
+	
+	player = {
+		'name': '',
+		'energy': '',
+		'level': '',
+		'xp': '',
+		'str': '',
+		'x': 0,
+		'y': 0,
+		'sprite': Assets.lib['player']
+	};
+			
 	map.generate();
 	movePlayerTo(0, 0);
 }
@@ -99,56 +105,28 @@ function movePlayerTo(x,y) {
 	
 	map.draw(canvas);
 }
-
-function loadImage(uri) {
-	var img = new Image();
-	preload_assets++;
-	img.src = uri;
-	img.onload = doneLoading;
-	return img;
-}
-
-function doneLoading() {
-	preload_assets--;
-	if (preload_assets > 0) return;
-	
-	//init();
-}
-
 function logMessage(str) {
 	var log = $('#log');
 	log.append($('<p>' + str + '</p>'));
 	log.stop().animate({ scrollTop: log.attr('scrollHeight') }, 500);
 }
 
-function makeDescription() {
-	if (Math.random() < 0.1) {
-		return "The worst room.";
-	} else {
-		return "The best room.";
-	}
-}
-
-
-
 function randBetween(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 function wrapValue(v, min, max) {
-	if (max < min) {
-		var tmp = min;
-		min = max;
-		max = tmp;
-	}
+	if (max < min) { return wrapValue(v, max, min); }
 	
-	console.log("Wrapping value " + v + " to (" + min + "," + max + ")")
 	var d = max - min + 1;
-	
 	while (v < min) v += d;
 	while (v > max) v -= d;
-	
-	console.log(" >> Got " + v);
-	
+	return v;
+}
+
+function clampValue(v, min, max) {
+	if (max < min) { return clampValue(v, max, min); }
+	if (v < min) return min;
+	if (v > max) return max;
 	return v;
 }
