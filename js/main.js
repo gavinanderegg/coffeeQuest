@@ -1,12 +1,13 @@
-var map, state, player, default_actions, preload_assets;
+var map, state, player, default_actions, preload_assets, key_bindings;
 
 $(document).ready(function(){
-	const DOWN = 40;
-	const UP = 38;
-	const LEFT = 37;
-	const RIGHT = 39;
+	const KEY_DOWN = 40;
+	const KEY_UP = 38;
+	const KEY_LEFT = 37;
+	const KEY_RIGHT = 39;
 	
 	map = [];
+	key_bindings = [];
 	
 	default_actions = {
 		'Inventory': function() {
@@ -20,7 +21,7 @@ $(document).ready(function(){
 	
 	player = {
 		'name': '',
-		'caffination': '',
+		'energy': '',
 		'level': '',
 		'xp': '',
 		'str': '',
@@ -37,58 +38,32 @@ $(document).ready(function(){
 	// 		console.log();
 	// 	});
 	
-	$(document).keydown(function(event){
-		switch (event.keyCode) {
-		case DOWN:
-			if (player.y >= 8) {
-				movePlayerTo(player.x, 0);
-			} else {
-				movePlayerTo(player.x, player.y + 1);
-			}
-			
-			drawMap();
-			event.preventDefault();
-			break;
-		case UP:
-			if (player.y <= 0) {
-				movePlayerTo(player.x, 8);
-			} else {
-				movePlayerTo(player.x, player.y - 1);
-			}
-			
-			drawMap();
-			event.preventDefault();
-			break;
-		case RIGHT:
-			if (player.x >= 8) {
-				movePlayerTo(0, player.y);
-				//document.location = "http://www.youtube.com/";
-			} else {
-				movePlayerTo(player.x + 1, player.y);
-			}
-			
-			drawMap();
-			event.preventDefault();
-			break;
-		case LEFT:
-			if (player.x <= 0) {
-				movePlayerTo(8, player.y);
-			} else {
-				movePlayerTo(player.x - 1, player.y);
-			}
-			
-			drawMap();
-			event.preventDefault();
-			break;
-		}
-	});
+	$(document).keydown(handleKeyPress);
+	bindKey(KEY_DOWN, function() { movePlayerTo(player.x, wrapValue(player.y + 1, 0, 8)); });
+	bindKey(KEY_UP, function() { movePlayerTo(player.x, wrapValue(player.y - 1, 0, 8)); });
+	bindKey(KEY_RIGHT, function() { movePlayerTo(wrapValue(player.x + 1, 0, 8), player.y); });
+	bindKey(KEY_LEFT, function() { movePlayerTo(wrapValue(player.x - 1, 0, 8), player.y); });
 });
 
 function init() {
 	makeMap();
-	
 	movePlayerTo(0, 0);
-	drawMap();
+}
+
+function bindKey(k, f) {
+	key_bindings[k] = f;
+}
+
+function unbindKey(k) {
+	key_bindings[k] = null;
+}
+
+function handleKeyPress(event) {
+	var k = event.keyCode;
+	if (key_bindings[k]) {
+		key_bindings[k]();
+		event.preventDefault;
+	}
 }
 
 function makeMap() {
@@ -125,6 +100,8 @@ function movePlayerTo(x,y) {
 		action_menu.append(btn);
 		btn.click(m.actions[action]);
 	}
+	
+	drawMap();
 }
 
 
@@ -161,7 +138,6 @@ function MapTile() {
 		}
 	};
 }
-
 
 function makeDescription() {
 	if (Math.random() < 0.1) {
@@ -206,4 +182,22 @@ function drawMap() {
 
 function randBetween(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function wrapValue(v, min, max) {
+	if (max < min) {
+		var tmp = min;
+		min = max;
+		max = tmp;
+	}
+	
+	console.log("Wrapping value " + v + " to (" + min + "," + max + ")")
+	var d = max - min + 1;
+	
+	while (v < min) v += d;
+	while (v > max) v -= d;
+	
+	console.log(" >> Got " + v);
+	
+	return v;
 }
