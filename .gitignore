@@ -1,0 +1,9 @@
+*~
+*.pyc
+.*
+settingsLocal.py
+multilingual/__init__.py
+~/multilingual/__init__.py
+*.mo
+static/images/
+data.sqlite3
