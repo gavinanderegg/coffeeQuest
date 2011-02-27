@@ -8,6 +8,7 @@
 body
 {
 	background-color: #CCC;
+	font-family: "Lucida Grande", Calibri;
 }
 
 #root
@@ -42,6 +43,18 @@ body
 	background-color: #ccc;
 	height: 378px;
 	border: 1px solid #333;
+}
+
+#action_menu p 
+{
+	cursor: pointer;
+	display: block;
+	padding: 5px;
+}
+
+#action_menu p:hover
+{
+	background: #8ce;
 }
 
 #log

@@ -62,6 +62,7 @@ $(document).ready(function(){
 		case RIGHT:
 			if (player.x >= 8) {
 				movePlayerTo(0, player.y);
+				//document.location = "http://www.youtube.com/";
 			} else {
 				movePlayerTo(player.x + 1, player.y);
 			}
@@ -109,11 +110,24 @@ function movePlayerTo(x,y) {
 	map[y][x].revealed = true;
 	logMessage(map[y][x].description);
 	
-	var actions = default_actions.slice();
-	if (m.actions) {
-		actions.push(m.actions);
+	var action_menu = $('#action_menu');
+	var btn = null;
+	action_menu.empty();
+	
+	for (action in default_actions) {
+		btn = $('<p id="' + action + '">' + action + '</p>');
+		action_menu.append(btn);
+		btn.click(default_actions[action]);
+	}
+	
+	for (action in m.actions) {
+		btn = $('<p id="' + action + '">' + action + '</p>');
+		action_menu.append(btn);
+		btn.click(m.actions[action]);
 	}
 }
+
+
 
 function loadImage(uri) {
 	var img = new Image();
@@ -141,10 +155,20 @@ function MapTile() {
 	this.revealed = false;
 	
 	this.description = makeDescription();
+	this.actions = {
+		'Search': function() {
+			logMessage('You search the room and find nothing.');
+		}
+	};
 }
 
+
 function makeDescription() {
-	return "The best room";
+	if (Math.random() < 0.1) {
+		return "The worst room.";
+	} else {
+		return "The best room.";
+	}
 }
 
 
