@@ -2,8 +2,9 @@ var map, state, player, default_actions, preload_assets, key_bindings, canvas;
 
 $(document).ready(function(){
 	$LAB
-		.script("js/Map.js")
 		.script("js/Assets.js")
+		.script("js/Map.js")
+		.script("js/Templates.js")
 		.wait(function() {
 			console.log("Setting up...");
 			

@@ -19,6 +19,7 @@ Map.prototype.generate = function() {
 		map[y] = [];
 		for (x = 0; x < 9; x++) {
 			map[y][x] = new MapTile();
+            map[y][x].apply(Templates.MapTiles.street);
 		}
 	}
 }
@@ -62,7 +63,17 @@ function MapTile() {
 	this.revealed = false;
 	
 	this.description = '';
-	this.actions = {}
+	this.actions = {};
+}
+
+MapTile.prototype.apply = function(template) {
+    var bp = template;
+    if (typeof template == "function")
+        bp = template();
+    
+    for (key in bp) {
+        this[key] = bp[key];
+    }
 }
 
 //==================================================================================================
