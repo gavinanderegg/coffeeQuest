@@ -20,7 +20,9 @@ body
 
 #container
 {
-	
+	position: relative;
+	margin: auto;
+	width: 578px;
 }
 
 #map
@@ -28,15 +30,24 @@ body
 	display: block;
 	width: 378px;
 	height: 378px;
-	margin: auto;
+	border: 1px solid #333;	
+}
+
+#action_menu
+{
+	display: block;
+	position: absolute;
+	right: -2px;
+	width: 198px;
+	background-color: #ccc;
+	height: 378px;
 	border: 1px solid #333;
-	
 }
 
 #log
 {
 	display: block;
-	width: 520px;
+	width: 578px;
 	height: 200px;
 	margin: auto;
 	border: 1px solid #333;

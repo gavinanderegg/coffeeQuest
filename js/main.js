@@ -1,4 +1,4 @@
-var map, state, player, preload_assets;
+var map, state, player, default_actions, preload_assets;
 
 $(document).ready(function(){
 	const DOWN = 40;
@@ -7,6 +7,12 @@ $(document).ready(function(){
 	const RIGHT = 39;
 	
 	map = [];
+	
+	default_actions = {
+		'Inventory': function() {
+			logMessage('Looking at your inventory.');
+		}
+	};
 	
 	state = {
 		'level': ''
@@ -75,11 +81,16 @@ $(document).ready(function(){
 			break;
 		}
 	});
-	
-	init();
 });
 
 function init() {
+	makeMap();
+	
+	movePlayerTo(0, 0);
+	drawMap();
+}
+
+function makeMap() {
 	for (y = 0; y < 9; y++) {
 		map[y] = [];
 		for (x = 0; x < 9; x++) {
@@ -91,9 +102,17 @@ function init() {
 }
 
 function movePlayerTo(x,y) {
+	var m = map[y][x];
+	
 	player.x = x;
 	player.y = y;
 	map[y][x].revealed = true;
+	logMessage(map[y][x].description);
+	
+	var actions = default_actions.slice();
+	if (m.actions) {
+		actions.push(m.actions);
+	}
 }
 
 function loadImage(uri) {
@@ -108,19 +127,26 @@ function doneLoading() {
 	preload_assets--;
 	if (preload_assets > 0) return;
 	
-	drawMap();
+	init();
 }
 
 function logMessage(str) {
 	var log = $('#log');
-	log.append($('<p>'+str+'</p>'));
-	log.animate({ scrollTop: log.attr('scrollHeight') }, 500);
+	log.append($('<p>' + str + '</p>'));
+	log.stop().animate({ scrollTop: log.attr('scrollHeight') }, 500);
 }
 
 function MapTile() {
 	this.color = { r:128, g:128, b:128 };
 	this.revealed = false;
+	
+	this.description = makeDescription();
 }
+
+function makeDescription() {
+	return "The best room";
+}
+
 
 function drawMap() {
 	var canvas = document.getElementById("map");
@@ -139,8 +165,7 @@ function drawMap() {
 			
 			c.strokeStyle = "rgb(30,110,210)";
 			
-			if (i == 0 && j == 0) console.log(m.revealed);
-			if ( m.revealed ) {
+			if (m.revealed) {
 				c.fillStyle = "rgb(" + m.color.r + ", " + m.color.g + ", " + m.color.b + ")";
 			} else {
 				c.fillStyle = "rgb(10, 10, 10)";
@@ -149,8 +174,6 @@ function drawMap() {
 			c.strokeRect(j * width, i * height, width, height);
 		}
 	}
-	
-	console.log('player.sprite');
 	
 	c.drawImage(player.sprite, player.x * width, player.y * height);
 }
