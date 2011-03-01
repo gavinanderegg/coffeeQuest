@@ -1,10 +1,11 @@
-var map, state, player, default_actions, preload_assets, key_bindings, canvas;
+var map, state, player, default_actions, preload_assets, key_bindings, canvas, config;
 
 $(document).ready(function(){
 	$LAB
 	.script("js/Assets.js")
 	.script("js/Map.js")
 	.script("js/Templates.js")
+	.script("js/Config.js")
 	.wait(function() {
 		console.log("Setting up...");
 		
@@ -15,13 +16,13 @@ $(document).ready(function(){
 		
 		canvas = document.getElementById("map");
 		map = new Map(9, 9);
+		config = new Config();
 		
 		default_actions = {
 			'Inventory': function() {
 				logMessage('Looking at your inventory.');
 			}
 		};
-		
 		
 		// $('#map').click(function() {
 		// 		document.addEventListener("click", function() {
@@ -86,6 +87,13 @@ function movePlayerTo(x,y) {
 	player.x = x;
 	player.y = y;
 	map[y][x].revealed = true;
+	
+	if (config.longView === true) {
+		if (y >= 1) { map[y-1][x].revealed = true; }
+		if (y <= 7) { map[y+1][x].revealed = true; }
+		if (x >= 1) { map[y][x-1].revealed = true; }
+		if (x <= 7) { map[y][x+1].revealed = true; }
+	}
 	
 	logMessage(map[y][x].description);
 	
