@@ -2,44 +2,44 @@ var map, state, player, default_actions, preload_assets, key_bindings, canvas;
 
 $(document).ready(function(){
 	$LAB
-		.script("js/Assets.js")
-		.script("js/Map.js")
-		.script("js/Templates.js")
-		.wait(function() {
-			console.log("Setting up...");
-			
-			const KEY_DOWN = 40;
-			const KEY_UP = 38;
-			const KEY_LEFT = 37;
-			const KEY_RIGHT = 39;
-			
-			canvas = document.getElementById("map");
-			map = new Map(9, 9);
-			
-			default_actions = {
-				'Inventory': function() {
-					logMessage('Looking at your inventory.');
-				}
-			};
-			
-			
-			// $('#map').click(function() {
-			// 		document.addEventListener("click", function() {
-			// 			console.log(event.offsetX);
-			// 		}, true);
-			// 		
-			// 		console.log();
-			// 	});
-			
-			key_bindings = [];
-			$(document).keydown(handleKeyPress);
-			bindKey(KEY_DOWN, function() { movePlayerTo(player.x, wrapValue(player.y + 1, 0, 8)); });
-			bindKey(KEY_UP, function() { movePlayerTo(player.x, wrapValue(player.y - 1, 0, 8)); });
-			bindKey(KEY_RIGHT, function() { movePlayerTo(wrapValue(player.x + 1, 0, 8), player.y); });
-			bindKey(KEY_LEFT, function() { movePlayerTo(wrapValue(player.x - 1, 0, 8), player.y); });
-			
-			Assets.load(init);
-		});
+	.script("js/Assets.js")
+	.script("js/Map.js")
+	.script("js/Templates.js")
+	.wait(function() {
+		console.log("Setting up...");
+		
+		const KEY_DOWN = 40;
+		const KEY_UP = 38;
+		const KEY_LEFT = 37;
+		const KEY_RIGHT = 39;
+		
+		canvas = document.getElementById("map");
+		map = new Map(9, 9);
+		
+		default_actions = {
+			'Inventory': function() {
+				logMessage('Looking at your inventory.');
+			}
+		};
+		
+		
+		// $('#map').click(function() {
+		// 		document.addEventListener("click", function() {
+		// 			console.log(event.offsetX);
+		// 		}, true);
+		// 		
+		// 		console.log();
+		// 	});
+		
+		key_bindings = [];
+		$(document).keydown(handleKeyPress);
+		bindKey(KEY_DOWN, function() { movePlayerTo(player.x, wrapValue(player.y + 1, 0, 8)); });
+		bindKey(KEY_UP, function() { movePlayerTo(player.x, wrapValue(player.y - 1, 0, 8)); });
+		bindKey(KEY_RIGHT, function() { movePlayerTo(wrapValue(player.x + 1, 0, 8), player.y); });
+		bindKey(KEY_LEFT, function() { movePlayerTo(wrapValue(player.x - 1, 0, 8), player.y); });
+		
+		Assets.load(init);
+	});
 });
 
 function init() {
@@ -76,7 +76,7 @@ function handleKeyPress(event) {
 	var k = event.keyCode;
 	if (key_bindings[k]) {
 		key_bindings[k]();
-		event.preventDefault;
+		event.preventDefault();
 	}
 }
 
@@ -86,6 +86,7 @@ function movePlayerTo(x,y) {
 	player.x = x;
 	player.y = y;
 	map[y][x].revealed = true;
+	
 	logMessage(map[y][x].description);
 	
 	var action_menu = $('#action_menu');
