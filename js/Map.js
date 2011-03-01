@@ -1,17 +1,17 @@
 //==================================================================================================
 // Map class
 function Map(w, h) {
-    this.width = w;
-    this.height = h;
-    this.tiles = [];
-    
-    var x, y;
-    for (y = 0; y < this.height; y++) {
-        this.tiles[y] = [];
-        for (x = 0; x < this.height; x++) {
-            this.tiles[y][x] = null;
-        }
-    }
+	this.width = w;
+	this.height = h;
+	this.tiles = [];
+	
+	var x, y;
+	for (y = 0; y < this.height; y++) {
+		this.tiles[y] = [];
+		for (x = 0; x < this.height; x++) {
+			this.tiles[y][x] = null;
+		}
+	}
 }
 
 Map.prototype.generate = function() {
@@ -19,10 +19,10 @@ Map.prototype.generate = function() {
 		map[y] = [];
 		for (x = 0; x < 9; x++) {
 			map[y][x] = new MapTile();
-            map[y][x].apply(Templates.MapTiles.street);
+			map[y][x].apply(Templates.MapTiles.street);
 		}
 	}
-}
+};
 
 
 Map.prototype.draw = function(camvas) {
@@ -52,7 +52,7 @@ Map.prototype.draw = function(camvas) {
 	}
 	
 	c.drawImage(player.sprite, player.x * width, player.y * height);
-}
+};
 
 
 
@@ -67,14 +67,14 @@ function MapTile() {
 }
 
 MapTile.prototype.apply = function(template) {
-    var bp = template;
-    if (typeof template == "function")
-        bp = template();
-    
-    for (key in bp) {
-        this[key] = bp[key];
-    }
-}
+	var bp = template;
+	if (typeof template == "function")
+		bp = template();
+	
+	for (key in bp) {
+		this[key] = bp[key];
+	}
+};
 
 //==================================================================================================
 
