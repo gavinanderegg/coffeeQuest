@@ -33,18 +33,21 @@ var setupMap = function() {
 
         for (y = 0; y < Map.height; y++) {
 
-            var choice = _.random(85)
-            if (choice < 60) {
-                var tile = ['street', TileTypes['street']];
-            }
-            else if (choice < 70) {
+            var choice = _.random(80)
+            if (choice < 5) {
                 var tile = ['coffee', TileTypes['coffee']];
             }
-            else if (choice < 75) {
+            else if (choice < 7) {
                 var tile = ['espresso', TileTypes['espresso']];
             }
+            else if (choice < 12) {
+                var tile = ['sale', TileTypes['sale']];
+            }
+            else if (choice < 15) {
+                var tile = ['taxes', TileTypes['taxes']];   
+            }
             else {
-                var tile = ['sale', TileTypes['sale']];   
+                var tile = ['street', TileTypes['street']];      
             }
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
@@ -171,11 +174,11 @@ var State = {
 
     turn: function() {
 
-        State.changeCaffeine(-1)
-
-        if ( State.caffeine < 1 ) {
+        if ( State.caffeine == 0 ) {
             UI.gameOver()
         }
+
+        State.changeCaffeine(-1)
 
     },
 
@@ -280,8 +283,8 @@ var State = {
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
                     lookForNextLevel()
-                    State.turn();
                     setupTileEvent()
+                    State.turn();
                 }, this);    
                 State.playerX += modx;
             }
@@ -289,10 +292,11 @@ var State = {
             if (mody) {
                 tween = game.add.tween(main.player).to( { y: newY }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
                 tween.onComplete.add(function(){
+                    if (modx) return;
                     State.keysLocked = false;
                     lookForNextLevel()
-                    State.turn();
                     setupTileEvent()
+                    State.turn();
                 }, this);  
                 State.playerY += mody;
             }
@@ -306,32 +310,49 @@ var Event = {
     events: {
         coffee: {
             name: "Coffee shop",
-            run: function() {
+            run: function(event) {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
+                State.changeTile(event.x, event.y, "closed");
                 return "Bought a coffee! - $2 , +3 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
-            run: function() {
+            run: function(event) {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
+                State.changeTile(event.x, event.y, "closed");
                 return "Bought an espresso! - $5 , +10 caffeine";
             }
         },
         sale: {
             name: "Sale",
             run: function(event) {
-                State.changeMoney(50);
-                State.changeCaffeine(-2);
+                var money = _.random(50,500)
+                var caffeine = Math.floor(money / 50)
+                State.changeMoney(money);
+                State.changeCaffeine(-caffeine);
                 State.changeTile(event.x, event.y, "street");
-                return "Made a sale! + $50 , - 2 caffeine";
+                return "Made a sale! + $"+ money +" , -"+ caffeine +" caffeine";
+            }
+        },
+        taxes: {
+            name: "Taxes",
+            run: function(event) {
+                var money = Math.floor(_.random(5,10) * State.money / 100)
+                State.changeMoney(-money);
+                State.changeTile(event.x, event.y, "street");
+                return "You have to pay tax! - $"+ money;
             }
         },
         street: {
             name: "Street",
             run: function() { return false; }
+        },
+        closed: {
+            name: "Shop",
+            run: function() { return "We're closed!"; }
         },
     },
 
@@ -368,7 +389,9 @@ var Tile = {
         tileCoffee: "img/tile-coffee1.png",
         tileEspresso: "img/tile-coffee2.png",
         tileBuilding: "img/tile-building.png",
+        tileClosed: "img/tile-closed.png",
         tileMoney: "img/tile-cash.png",
+        tileTaxes: "img/tile-taxes.png",
         tileFog: "img/tile-fog.png",
         sign: "img/sign.png"
     },
@@ -391,9 +414,17 @@ var TileTypes = {
         'sprite': 'tileCoffee',
         'events': ['coffee']
     },
+    'closed': {
+        'sprite': 'tileClosed',
+        'events': ['closed']
+    },
     'espresso': {
         'sprite': 'tileEspresso',
         'events': ['espresso']
+    },
+    'taxes': {
+        'sprite': 'tileTaxes',
+        'events': ['taxes']
     },
     'sale': {
         'sprite': 'tileMoney',
