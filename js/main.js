@@ -8,7 +8,7 @@ var Config = {
     },
     'windowSize': {
         'width': 504,
-        'height': 504 
+        'height': 504
     },
     'textSpeed': 150,
     'animationSpeed': 150,
@@ -24,28 +24,29 @@ var Map = {
 
 var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
-    
+
     for (x = 0; x < Map.width; x++) {
         var tileRow = [];
         var fogRow = [];
-        
+
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
-            
-            tileRow.push({
-                type: tile[0]
-            });
-            
-            game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
+
+            var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
-            
+
+            tileRow.push({
+                type: tile[0],
+                sprite: sprite
+            });
+
             fogRow.push(tileFog);
         }
-        
+
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-    
+
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -54,27 +55,27 @@ var main = {
     preload: function() {
         // This function will be executed at the beginning
         // That's where we load the game's assets
-        
+
         game.load.image('player', '/img/player.png');
         Tile.preload(game);
     },
-    
+
     create: function() {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
-        
+
         setupMap();
-        
+
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
-        
+
         State.changeLocation(0,0);
     },
-    
+
     update: function() {
         // This function is called 60 times per second
         // It contains the game's logic
-        
+
             if ( State.keysLocked ) return
 
             if (this.cursors.right.isUp) {
@@ -82,14 +83,14 @@ var main = {
                     Config.keyState.right = true;
                 }
             }
-           
+
 
             if (this.cursors.left.isUp) {
                 if (!Config.keyState.left) {
                     Config.keyState.left = true;
                 }
             }
-        
+
             if (this.cursors.up.isUp) {
                 if (!Config.keyState.up) {
                     Config.keyState.up = true;
@@ -110,7 +111,7 @@ var main = {
                     return;
                 }
             }
-            
+
             if (this.cursors.left.isDown) {
                 State.keysLocked = false;
                 if (Config.keyState.left) {
@@ -119,8 +120,6 @@ var main = {
                     return;
                 }
             }
-            
-            
             if (this.cursors.up.isDown) {
                 State.keysLocked = false;
                 if (Config.keyState.up) {
@@ -129,7 +128,6 @@ var main = {
                     return;
                 }
             }
-           
             if (this.cursors.down.isDown) {
                 State.keysLocked = false;
                 if (Config.keyState.down) {
@@ -138,7 +136,6 @@ var main = {
                     return;
                 }
             }
-        
     },
 };
 
@@ -173,7 +170,7 @@ var State = {
         if (this.errors.length) {
             return;
         }
-        
+
         if (this.money + mod < 0) {
             this.errors.push(Messages.notEnoughMoney);
         } else {
@@ -185,7 +182,7 @@ var State = {
         if (this.errors.length) {
             return;
         }
-        
+
         if (this.caffeine + mod < 0) {
             this.errors.push(Messages.notEnoughCaffeine);
         } else {
@@ -193,11 +190,21 @@ var State = {
         }
     },
 
+    changeTile: function(x, y, tiletype) {
+        Map.tiles[x][y].sprite.kill();
+
+        var tile = TileTypes[tiletype];
+        Map.tiles[x][y].type = tiletype;
+        Map.tiles[x][y].sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile.sprite);
+
+        main.player.bringToTop();
+    },
+
     changeLocation: function(modx, mody) {
         if (this.errors.length) {
             return;
         }
-        
+
         newX = main.player.position.x + Config.squareSide*modx;
         newY = main.player.position.y + Config.squareSide*mody;
         tileX = newX / Config.squareSide;
@@ -205,7 +212,6 @@ var State = {
         moved = false;
 
         moved = (modx && newX > -1 && newX < Config.windowSize.width) || (mody && newY > -1 && newY < Config.windowSize.height);
-            
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
                 if (Map.fog[baseX][baseY] !== undefined) {
@@ -216,16 +222,16 @@ var State = {
                 }
             }
         };
-        
+
         var lookForNextLevel = function() {
             if (newX === (Config.windowSize.height - Config.squareSide) &&
                 newY === (Config.windowSize.width - Config.squareSide)) {
                     // TODO: tween this?
                     Map.tiles = [];
                     Map.fog = [];
-                    
+
                     Map.nextSign.destroy();
-                    
+
                     setupMap();
 
                     main.player = game.add.sprite(0, 0, 'player');
@@ -246,9 +252,9 @@ var State = {
                 unfog(cx, cy);
             });
         });
-        
+
         if (moved) {
-            
+
             State.keysLocked = true;
 
             if (modx) {
@@ -257,22 +263,19 @@ var State = {
                     State.keysLocked = false;
                     State.playerX += modx;
                     lookForNextLevel()
-                }, this);    
+                }, this);
             }
-            
+
             if (mody) {
                 tween = game.add.tween(main.player).to( { y: newY }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
                     State.playerY += mody;
                     lookForNextLevel()
-                }, this);    
+                }, this);
             }
 
-
-            
             State.turn();
-
 
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
         }
@@ -284,7 +287,7 @@ var Event = {
     events: {
         coffee: {
             name: "Coffee",
-            run: function() {
+            run: function(event) {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
                 return "Bought a coffee! - $2 , +10 caffeine";
@@ -292,24 +295,24 @@ var Event = {
         },
         sale: {
             name: "Sale",
-            run: function() {
+            run: function(event) {
                 State.changeMoney(50);
                 State.changeCaffeine(-2);
+                State.changeTile(event.x, event.y, "street");
                 return "Made a sale! + $50 , - 2 caffeine";
             }
         },
         street: {
             name: "Street",
-            run: function() { return "Walked down the street"; }
+            run: function(event) { return "Walked down the street"; }
         },
     },
 
     create: function(name) {
-        
+
         var ev = this.events[name];
         if (!ev) { return false; }
-        
-        var msg = ev.run();
+        var msg = ev.run({ x:State.playerX, y:State.playerY, eventName:name });
         UI.update();
 
         var err = [];
@@ -324,7 +327,7 @@ var Event = {
         }
 
         UI.message(msg, '', ev.name);
-        
+
 
     },
 
@@ -335,6 +338,7 @@ var Tile = {
     sprites: {
         tileStreet: "img/tile-street.png",
         tileBuilding: "img/tile-building.png",
+        tileMoney: "img/tile-cash.png",
         tileFog: "img/tile-fog.png",
         sign: "img/sign.png"
     },
@@ -356,6 +360,10 @@ var TileTypes = {
     'building': {
         'sprite': 'tileBuilding',
         'events': ['coffee']
+    },
+    'sale': {
+        'sprite': 'tileMoney',
+        'events': ['sale']
     }
 };
 
@@ -395,7 +403,7 @@ var UI = {
 var game = new Phaser.Game(Config.windowSize.width, Config.windowSize.height, Phaser.AUTO, 'coffee');
 
 $(function() {
-    
+
     game.state.add('main', main);
     game.state.start('main');
     UI.updateFast();
