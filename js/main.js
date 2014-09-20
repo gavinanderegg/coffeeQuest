@@ -224,7 +224,7 @@ var Messages = {
 var State = {
 
     money: 100,
-    caffeine: 10,
+    caffeine: 15,
     playerX: 0,
     playerY: 0,
     level: 1,
@@ -234,7 +234,7 @@ var State = {
 
     turn: function() {
 
-        if ( State.caffeine == 0 ) {
+        if ( State.caffeine < 1 ) {
             UI.gameOver()
         }
 
@@ -261,9 +261,9 @@ var State = {
 
         if (this.caffeine + mod < 0) {
             this.errors.push(Messages.notEnoughCaffeine);
-        } else {
-            this.caffeine += mod;
         }
+        this.caffeine += mod;
+        
     },
 
     changeTile: function(x, y, tiletype, hide) {
@@ -411,7 +411,7 @@ var Event = {
                 State.changeMoney(money);
                 State.changeTile(event.x, event.y, "bankClosed");
                 if (money < 0) {
-                    return "Had to pay tax! -$" + money; 
+                    return "Had to pay tax! -$" + money*-1; 
                 }
                 else {
                     return "Collected interest! +$" + money; 
@@ -462,7 +462,7 @@ var Tile = {
         tileEspresso: "img/tile-coffee2.png",
         tileBuilding: "img/tile-building.png",
         tileClosed: "img/tile-closed.png",
-        tileBankClosed: "img/tile-bank-closed.png",
+        tileBankClosed: "img/tile-bankclosed.png",
         tileMoney: "img/tile-cash.png",
         tileBank: "img/tile-taxes.png",
         tileFog: "img/tile-fog.png",
