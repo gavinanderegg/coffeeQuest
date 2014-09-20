@@ -53,12 +53,12 @@ var Config = {
         'left': true,
         'right': true
     }
-}
+};
 
 var Messages = {
     notEnoughMoney: "You can't afford it!",
     notEnoughCaffeine: "You're out of caffeine!",
-}
+};
 
 var State = {
 
@@ -82,7 +82,7 @@ var State = {
 
 
 
-}
+};
 
 var Event = {
 
@@ -113,7 +113,7 @@ var Event = {
         }
 
     }
-}
+};
 
 
 var game = new Phaser.Game(400, 450, Phaser.AUTO, 'coffee');
