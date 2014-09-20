@@ -63,21 +63,21 @@ var setupMap = function() {
             else {
                 tile = ['sale', TileTypes['sale']];
             }
-            
+
             if (_.random(1,100) > 80) {
                 tile = Map.wall;
             }
-            
+
             if ((x === 0 && y === 0) || (x === Map.height - 1 && y === Map.height - 1)) {
                 tile = ["street", {
                     'sprite': 'tileStreet',
                     'events': []
                 }];
             }
-            
+
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
-            
+
             tileRow.push({
                 type: tile[0],
                 sprite: sprite
@@ -232,13 +232,9 @@ var State = {
     },
 
     changeTile: function(x, y, tiletype, hide) {
-        Map.tiles[x][y].sprite.kill();
-
         var tile = TileTypes[tiletype];
         Map.tiles[x][y].type = tiletype;
-        Map.tiles[x][y].sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile.sprite);
-
-        main.player.bringToTop();
+        Map.tiles[x][y].sprite.loadTexture(tile.sprite);
     },
 
     changeLocation: function(modx, mody) {
@@ -247,16 +243,16 @@ var State = {
         tileX = newX / Config.squareSide;
         tileY = newY / Config.squareSide;
         moved = false;
-        
+
         if (Map.tiles[tileX][tileY].type === 'wall') {
             this.errors.push('You bump into a wall!');
         }
-        
+
         if (this.errors.length) {
-            
+
             return;
         }
-        
+
         moved = (modx && newX > -1 && newX < Config.windowSize.width) || (mody && newY > -1 && newY < Config.windowSize.height);
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
