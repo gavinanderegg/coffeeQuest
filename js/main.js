@@ -1,3 +1,19 @@
+var Config = {
+    'squareSide': 42,
+    'keyState': {
+        'up': true,
+        'down': true,
+        'left': true,
+        'right': true
+    }
+};
+
+
+var createMap = function() {
+    // Fill the map with a two-dimensional array of tiles. Pre-populate 
+};
+
+
 var main = {
     preload: function() {
         // This function will be executed at the beginning
@@ -12,6 +28,8 @@ var main = {
         
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(42, 42, 'player');
+        
+        
     },
     
     update: function() {
@@ -72,15 +90,7 @@ var main = {
     },
 };
 
-var Config = {
-    'squareSide': 42,
-    'keyState': {
-        'up': true,
-        'down': true,
-        'left': true,
-        'right': true
-    }
-};
+
 
 var Messages = {
     notEnoughMoney: "You can't afford it!",
