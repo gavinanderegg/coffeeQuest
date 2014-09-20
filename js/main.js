@@ -89,7 +89,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-
+    
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -249,11 +249,17 @@ var State = {
         moved = false;
         
         if (Map.tiles[tileX][tileY].type === 'wall') {
-            this.errors.push('You bump into a wall!');
+            UI.message("You bump into a wall!", 'error', 'Ouch!');
+            modx = 0;
+            mody = 0;
+            newX = main.player.position.x + Config.squareSide;
+            newY = main.player.position.y + Config.squareSide;
+            tileX = newX / Config.squareSide;
+            tileY = newY / Config.squareSide;
+            moved = false;
         }
         
         if (this.errors.length) {
-            
             return;
         }
         
