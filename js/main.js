@@ -38,6 +38,7 @@ var main = {
         // That's where we load the game's assets
         
         game.load.image('player', '/img/player.png');
+        Tile.preload(game)
     },
     
     create: function() {
@@ -45,9 +46,7 @@ var main = {
         // Here we set up the game, display sprites, etc.
         
         this.cursors = game.input.keyboard.createCursorKeys();
-        this.player = game.add.sprite(42, 42, 'player');
-        
-        
+        this.player = game.add.sprite(Config.squareSide, Config.squareSide, 'player');
     },
     
     update: function() {
@@ -186,14 +185,15 @@ var Event = {
 var Tile = {
 
     sprites: {
-        street: "img/tile-street.png",
-        building: "img/tile-building.png",
+        tileStreet: "img/tile-street.png",
+        tileBuilding: "img/tile-building.png",
     },
 
-    create: function(name, x, y) {
-        
-    }
-
+    preload: function(game) {
+        $.each(this.sprites, function(i, e) {
+            game.load.image(i, e);
+        })
+    },
 
 }
 
