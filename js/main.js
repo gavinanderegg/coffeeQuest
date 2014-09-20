@@ -50,18 +50,29 @@ var setupMap = function() {
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
 
-            var choice = _.random(85);
-            if (choice < 60) {
-                tile = ['street', TileTypes['street']];
-            }
-            else if (choice < 70) {
-                tile = ['coffee', TileTypes['coffee']];
-            }
-            else if (choice < 75) {
-                tile = ['espresso', TileTypes['espresso']];
+            if (_.random(1,100) > 80) {
+                tile = ["wall", {
+                    'sprite': 'tileWall',
+                    'events': []
+                }];
             }
             else {
-                tile = ['sale', TileTypes['sale']];
+                var choice = _.random(85)
+                if (choice < 5) {
+                    var tile = ['coffee', TileTypes['coffee']];
+                }
+                else if (choice < 7) {
+                    var tile = ['espresso', TileTypes['espresso']];
+                }
+                else if (choice < 12) {
+                    var tile = ['sale', TileTypes['sale']];
+                }
+                else if (choice < 15) {
+                    var tile = ['taxes', TileTypes['taxes']];   
+                }
+                else {
+                    var tile = ['street', TileTypes['street']];      
+                }
             }
 
             if (_.random(1,100) > 80) {
@@ -223,11 +234,11 @@ var State = {
 
     turn: function() {
 
-        State.changeCaffeine(-1)
-
-        if ( State.caffeine < 1 ) {
+        if ( State.caffeine == 0 ) {
             UI.gameOver()
         }
+
+        State.changeCaffeine(-1)
 
     },
 
@@ -335,20 +346,21 @@ var State = {
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
                     lookForNextLevel()
-                    State.turn();
                     setupTileEvent()
-                }, this);
+                    State.turn();
+                }, this);    
                 State.playerX += modx;
             }
 
             if (mody) {
                 tween = game.add.tween(main.player).to( { y: newY }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
                 tween.onComplete.add(function(){
+                    if (modx) return;
                     State.keysLocked = false;
                     lookForNextLevel()
-                    State.turn();
                     setupTileEvent()
-                }, this);
+                    State.turn();
+                }, this);  
                 State.playerY += mody;
             }
 
@@ -361,33 +373,50 @@ var Event = {
     events: {
         coffee: {
             name: "Coffee shop",
-            run: function() {
-                State.changeMoney(-2);
-                State.changeCaffeine(3);
-                return "Bought a coffee! - $2 , +3 caffeine";
+            run: function(event) {
+                State.changeMoney(-5);
+                State.changeCaffeine(5);
+                State.changeTile(event.x, event.y, "closed");
+                return "Bought a coffee! -$5 , +5 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
-            run: function() {
-                State.changeMoney(-5);
-                State.changeCaffeine(10);
-                return "Bought an espresso! - $5 , +10 caffeine";
+            run: function(event) {
+                State.changeMoney(-12);
+                State.changeCaffeine(15);
+                State.changeTile(event.x, event.y, "closed");
+                return "Bought an espresso! -$12 , +15 caffeine";
             }
         },
         sale: {
             name: "Sale",
             run: function(event) {
-                var money = Dice.roll(5,6);
+                var money = Dice.roll(5,6) * 10;
+                var caffeine = Math.floor(money / 20);
+                console.log(caffeine)
                 State.changeMoney(money);
-                State.changeCaffeine(-2);
+                State.changeCaffeine(-caffeine);
                 State.changeTile(event.x, event.y, "street");
-                return "Made a sale! + $" + money + " , - 2 caffeine";
+                return "Made a sale! +$"+ money +" , -"+ caffeine +" caffeine";
+            }
+        },
+        taxes: {
+            name: "Taxes",
+            run: function(event) {
+                var money = Math.floor(_.random(5,10) * State.money / 100);
+                State.changeMoney(-money);
+                State.changeTile(event.x, event.y, "street");
+                return "Had to pay tax! -$" + money; 
             }
         },
         street: {
             name: "Street",
             run: function() { return false; }
+        },
+        closed: {
+            name: "Shop",
+            run: function() { return "We're closed!"; }
         },
     },
 
@@ -424,7 +453,9 @@ var Tile = {
         tileCoffee: "img/tile-coffee1.png",
         tileEspresso: "img/tile-coffee2.png",
         tileBuilding: "img/tile-building.png",
+        tileClosed: "img/tile-closed.png",
         tileMoney: "img/tile-cash.png",
+        tileTaxes: "img/tile-taxes.png",
         tileFog: "img/tile-fog.png",
         tileWall: "img/tile-wall.png",
         sign: "img/sign.png"
@@ -448,9 +479,17 @@ var TileTypes = {
         'sprite': 'tileCoffee',
         'events': ['coffee']
     },
+    'closed': {
+        'sprite': 'tileClosed',
+        'events': ['closed']
+    },
     'espresso': {
         'sprite': 'tileEspresso',
         'events': ['espresso']
+    },
+    'taxes': {
+        'sprite': 'tileTaxes',
+        'events': ['taxes']
     },
     'sale': {
         'sprite': 'tileMoney',
