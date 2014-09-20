@@ -19,19 +19,29 @@ var Map = {
     height: 12,
     tiles: [],
     fog: [],
-    nextSign: null
+    nextSign: null,
+    wall: ["wall", {
+        'sprite': 'tileWall',
+        'events': []
+    }]
 };
 
 var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
 
     for (x = 0; x < Map.width; x++) {
-
-
         var tileRow = [];
         var fogRow = [];
 
         for (y = 0; y < Map.height; y++) {
+            var tile = _.sample(_.pairs(TileTypes));
+
+            if (_.random(1,100) > 80) {
+                tile = ["wall", {
+                    'sprite': 'tileWall',
+                    'events': []
+                }];
+            }
 
             var choice = _.random(80)
             if (choice < 5) {
@@ -49,6 +59,7 @@ var setupMap = function() {
             else {
                 var tile = ['street', TileTypes['street']];      
             }
+
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
 
@@ -73,7 +84,7 @@ var main = {
         // This function will be executed at the beginning
         // That's where we load the game's assets
 
-        game.load.image('player', '/img/player.png');
+        game.load.image('player', 'img/player.png');
         Tile.preload(game);
     },
 
@@ -85,7 +96,8 @@ var main = {
 
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
-
+        State.changeTile(0, 0, 'street');
+        State.changeTile(Map.width - 1, Map.height - 1, 'street');
         State.changeLocation(0,0);
     },
 
@@ -217,6 +229,8 @@ var State = {
     },
 
     changeLocation: function(modx, mody) {
+        // if Map.tiles[baseX][baseY]
+
         if (this.errors.length) {
             return;
         }
@@ -300,7 +314,7 @@ var State = {
                 }, this);  
                 State.playerY += mody;
             }
-          
+
         }
     }
 };
@@ -312,18 +326,18 @@ var Event = {
             name: "Coffee shop",
             run: function(event) {
                 State.changeMoney(-2);
-                State.changeCaffeine(10);
+                State.changeCaffeine(3);
                 State.changeTile(event.x, event.y, "closed");
-                return "Bought a coffee! - $2 , +3 caffeine";
+                return "Bought a coffee! -$2 , +3 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
             run: function(event) {
-                State.changeMoney(-2);
+                State.changeMoney(-8);
                 State.changeCaffeine(10);
                 State.changeTile(event.x, event.y, "closed");
-                return "Bought an espresso! - $5 , +10 caffeine";
+                return "Bought an espresso! -$8 , +10 caffeine";
             }
         },
         sale: {
@@ -334,7 +348,7 @@ var Event = {
                 State.changeMoney(money);
                 State.changeCaffeine(-caffeine);
                 State.changeTile(event.x, event.y, "street");
-                return "Made a sale! + $"+ money +" , -"+ caffeine +" caffeine";
+                return "Made a sale! +$"+ money +" , -"+ caffeine +" caffeine";
             }
         },
         taxes: {
@@ -343,7 +357,7 @@ var Event = {
                 var money = Math.floor(_.random(5,10) * State.money / 100)
                 State.changeMoney(-money);
                 State.changeTile(event.x, event.y, "street");
-                return "You have to pay tax! - $"+ money;
+                return "You have to pay tax! -$"+ money;
             }
         },
         street: {
@@ -376,7 +390,7 @@ var Event = {
         }
 
         if (msg) {
-            UI.message(msg, '', ev.name);    
+            UI.message(msg, '', ev.name);
         }
     },
 
@@ -393,6 +407,7 @@ var Tile = {
         tileMoney: "img/tile-cash.png",
         tileTaxes: "img/tile-taxes.png",
         tileFog: "img/tile-fog.png",
+        tileWall: "img/tile-wall.png",
         sign: "img/sign.png"
     },
 
