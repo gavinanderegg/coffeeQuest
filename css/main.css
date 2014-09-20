@@ -11,6 +11,28 @@ body
 	font-family: "Lucida Grande", Calibri;
 }
 
+#container
+{
+	position: relative;
+	margin: auto;
+	width: 504px;
+}
+
+
+#messages
+{
+	display: block;
+	width: 504px;
+	height: 200px;
+	margin: auto;
+	border: 1px solid #333;
+	overflow: auto;
+}
+
+
+
+
+/*
 #root
 {
 	display: block;
@@ -18,14 +40,6 @@ body
 	margin: auto;
 	background-color: #FFF;
 }
-
-#container
-{
-	position: relative;
-	margin: auto;
-	width: 578px;
-}
-
 #map
 {
 	display: block;
@@ -57,12 +71,5 @@ body
 	background: #8ce;
 }
 
-#messages
-{
-	display: block;
-	width: 578px;
-	height: 200px;
-	margin: auto;
-	border: 1px solid #333;
-	overflow: auto;
-}
+
+*/

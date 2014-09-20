@@ -67,7 +67,7 @@ var main = {
         if (this.cursors.right.isDown) {
             if (Config.keyState.right) {
                 Config.keyState.right = false;
-                this.player.position.x += this.player.width;
+                State.changeLocation(1,0)
             }
         }
         
@@ -80,7 +80,7 @@ var main = {
         if (this.cursors.left.isDown) {
             if (Config.keyState.left) {
                 Config.keyState.left = false;
-                this.player.position.x -= this.player.width;
+                State.changeLocation(-1,0)
             }
         }
         
@@ -93,7 +93,7 @@ var main = {
         if (this.cursors.up.isDown) {
             if (Config.keyState.up) {
                 Config.keyState.up = false;
-                this.player.position.y -= this.player.width;
+                State.changeLocation(0,-1)
             }
         }
         
@@ -106,7 +106,7 @@ var main = {
         if (this.cursors.down.isDown) {
             if (Config.keyState.down) {
                 Config.keyState.down = false;
-                this.player.position.y += this.player.width;
+                State.changeLocation(0,1)
             }
         }
         
@@ -143,7 +143,6 @@ var State = {
         }
     },
 
-
     changeCaffeine: function(mod) {
         if (this.errors.length) {
             return;
@@ -160,9 +159,18 @@ var State = {
         if (this.errors.length) {
             return;
         }
+    
+        newX = main.player.position.x + Config.squareSide*modx;
+        newY = main.player.position.y + Config.squareSide*mody;
+
+        if (newX > -1 && newX < Config.windowSize.width) {
+            main.player.position.x = newX
+        }
+
+        if (newY > -1 && newY < Config.windowSize.height) {
+            main.player.position.y = newY
+        }
         
-        main.player.position.x += squareSide*modx;
-        main.player.position.y += squareSide*mody;
     }
 
 };
@@ -170,6 +178,7 @@ var State = {
 var Event = {
 
     events: {
+
         coffee: {
             name: "Coffee",
             desc: "A much-needed coffee break.",
@@ -193,11 +202,15 @@ var Event = {
         var ev = this.events[name];
         ev.run();
 
+        var err = []
+
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
                 message(i, 'error');
+                err.push(i)
                 State.errors.pop(i);
             });
+            return err
         }
         else {
             message(ev.name +" : "+ ev.desc);
