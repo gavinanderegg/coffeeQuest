@@ -35,7 +35,7 @@ var setupMap = function() {
 
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
-            
+
             if (_.random(1,100) > 80) {
                 tile = ["wall", {
                     'sprite': 'tileWall',
@@ -70,7 +70,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-    
+
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -226,7 +226,7 @@ var State = {
 
     changeLocation: function(modx, mody) {
         // if Map.tiles[baseX][baseY]
-        
+
         if (this.errors.length) {
             return;
         }
@@ -295,7 +295,7 @@ var State = {
                     lookForNextLevel()
                     State.turn();
                     setupTileEvent()
-                }, this);    
+                }, this);
                 State.playerX += modx;
             }
 
@@ -306,10 +306,10 @@ var State = {
                     lookForNextLevel()
                     State.turn();
                     setupTileEvent()
-                }, this);  
+                }, this);
                 State.playerY += mody;
             }
-          
+
         }
     }
 };
@@ -321,14 +321,14 @@ var Event = {
             name: "Coffee shop",
             run: function() {
                 State.changeMoney(-2);
-                State.changeCaffeine(10);
+                State.changeCaffeine(3);
                 return "Bought a coffee! - $2 , +3 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
             run: function() {
-                State.changeMoney(-2);
+                State.changeMoney(-5);
                 State.changeCaffeine(10);
                 return "Bought an espresso! - $5 , +10 caffeine";
             }
@@ -368,7 +368,7 @@ var Event = {
         }
 
         if (msg) {
-            UI.message(msg, '', ev.name);    
+            UI.message(msg, '', ev.name);
         }
     },
 
