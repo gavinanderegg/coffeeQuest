@@ -261,18 +261,18 @@ var State = {
                 tween = game.add.tween(main.player).to( { x: newX }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
-                    State.playerX += modx;
                     lookForNextLevel()
                 }, this);
+                State.playerX += modx;
             }
 
             if (mody) {
                 tween = game.add.tween(main.player).to( { y: newY }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
-                    State.playerY += mody;
                     lookForNextLevel()
                 }, this);
+                State.playerY += mody;
             }
 
             State.turn();
@@ -309,10 +309,11 @@ var Event = {
     },
 
     create: function(name) {
-
         var ev = this.events[name];
         if (!ev) { return false; }
+
         var msg = ev.run({ x:State.playerX, y:State.playerY, eventName:name });
+
         UI.update();
 
         var err = [];
@@ -327,8 +328,6 @@ var Event = {
         }
 
         UI.message(msg, '', ev.name);
-
-
     },
 
 };
