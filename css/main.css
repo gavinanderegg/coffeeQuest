@@ -7,7 +7,7 @@
 
 body
 {
-	background-color: #CCC;
+	background-color: #BBC;
 	font-family: "Lucida Grande", Calibri;
 }
 
@@ -16,6 +16,7 @@ body
 	position: relative;
 	margin: auto;
 	width: 504px;
+	padding:10px
 }
 
 

@@ -128,6 +128,8 @@ var State = {
 
     money: 10,
     caffeine: 100,
+    playerX: 0,
+    playerY: 0,
 
     errors: [],
 
@@ -165,11 +167,20 @@ var State = {
 
         if (newX > -1 && newX < Config.windowSize.width) {
             main.player.position.x = newX
+            State.playerX += modx;
         }
 
         if (newY > -1 && newY < Config.windowSize.height) {
             main.player.position.y = newY
+            State.playerY += mody;
         }
+
+        // fire tile event
+        
+        console.log( TileTypes[Map.tiles[0][0]).type].events )
+
+        //var eventResult = Event.create(
+            
         
     }
 
@@ -178,7 +189,6 @@ var State = {
 var Event = {
 
     events: {
-
         coffee: {
             name: "Coffee",
             desc: "A much-needed coffee break.",
@@ -194,12 +204,18 @@ var Event = {
                 State.changeMoney(50);
                 State.changeCaffeine(-2);
             }
-        }
+        },
+        street: {
+            name: "Street",
+            desc: "You walk down the street",
+            run: function() {}
+        },
     },
 
     create: function(name) {
         
         var ev = this.events[name];
+        if (!ev) return false;
         ev.run();
 
         var err = []
@@ -207,7 +223,7 @@ var Event = {
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
                 message(i, 'error');
-                err.push(i)
+                err.push(i);
                 State.errors.pop(i);
             });
             return err
@@ -216,7 +232,8 @@ var Event = {
             message(ev.name +" : "+ ev.desc);
         }
 
-    }
+    },
+
 };
 
 var Tile = {
@@ -238,7 +255,7 @@ var Tile = {
 var TileTypes = {
     'street': {
         'sprite': 'tileStreet',
-        'events': []
+        'events': ['street']
     },
     'building': {
         'sprite': 'tileBuilding',
