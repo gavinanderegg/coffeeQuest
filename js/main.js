@@ -26,6 +26,8 @@ var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
     
     for (x = 0; x < Map.width; x++) {
+
+
         var tileRow = [];
         var fogRow = [];
         
@@ -82,7 +84,6 @@ var main = {
                     Config.keyState.right = true;
                 }
             }
-           
 
             if (this.cursors.left.isUp) {
                 if (!Config.keyState.left) {
@@ -142,8 +143,8 @@ var Messages = {
 
 var State = {
 
-    money: 10,
-    caffeine: 100,
+    money: 100,
+    caffeine: 10,
     playerX: 0,
     playerY: 0,
     level: 1,
@@ -231,6 +232,10 @@ var State = {
             }
         }
 
+        var setupTileEvent = function() {
+            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
+        }
+
         _.each([tileX - 1, tileX, tileX + 1], function(element, index, list) {
             var cx = element;
             _.each([tileY - 1, tileY, tileY + 1], function(element, index, list) {
@@ -249,6 +254,8 @@ var State = {
                     State.keysLocked = false;
                     State.playerX += modx;
                     lookForNextLevel()
+                    State.turn();
+                    setupTileEvent()
                 }, this);    
             }
             
@@ -258,15 +265,11 @@ var State = {
                     State.keysLocked = false;
                     State.playerY += mody;
                     lookForNextLevel()
+                    State.turn();
+                    setupTileEvent()
                 }, this);    
             }
-
-
-            
-            State.turn();
-
-
-            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
+          
         }
     }
 };
@@ -275,11 +278,19 @@ var Event = {
 
     events: {
         coffee: {
-            name: "Coffee",
+            name: "Coffee shop",
             run: function() {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
-                return "Bought a coffee! - $2 , +10 caffeine";
+                return "Bought a coffee! - $2 , +3 caffeine";
+            }
+        },
+        espresso: {
+            name: "Espresso shop",
+            run: function() {
+                State.changeMoney(-2);
+                State.changeCaffeine(10);
+                return "Bought an espresso! - $5 , +10 caffeine";
             }
         },
         sale: {
@@ -292,7 +303,7 @@ var Event = {
         },
         street: {
             name: "Street",
-            run: function() { return "Walked down the street"; }
+            run: function() { return false; }
         },
     },
 
@@ -315,9 +326,10 @@ var Event = {
             return err;
         }
 
-        UI.message(msg, '', ev.name);
+        if (msg) {
+            UI.message(msg, '', ev.name);    
+        }
         
-
     },
 
 };
@@ -326,7 +338,8 @@ var Tile = {
 
     sprites: {
         tileStreet: "img/tile-street.png",
-        tileBuilding: "img/tile-building.png",
+        tileCoffee: "img/tile-coffee1.png",
+        tileEspresso: "img/tile-coffee2.png",
         tileFog: "img/tile-fog.png",
         sign: "img/sign.png"
     },
@@ -345,9 +358,13 @@ var TileTypes = {
         'sprite': 'tileStreet',
         'events': ['street']
     },
-    'building': {
-        'sprite': 'tileBuilding',
+    'coffee': {
+        'sprite': 'tileCoffee',
         'events': ['coffee']
+    },
+    'espresso': {
+        'sprite': 'tileEspresso',
+        'events': ['espresso']
     }
 };
 
@@ -368,6 +385,8 @@ var UI = {
 
     gameOver: function() {
         $('#gameOver').fadeIn()
+        $('#scoreValue').text(State.level * State.money)
+        State.keysLocked = true
     },
 
     update: function() {

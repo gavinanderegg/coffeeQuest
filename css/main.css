@@ -14,6 +14,10 @@ body
 div {
 	box-sizing:border-box;
 }
+a {
+	color:#336;
+	text-decoration: none;
+}
 #container
 {
 	position: relative;
@@ -112,12 +116,20 @@ li {
 	width:100%;
 	height:100%;
 	background-color:rgba(200,200,0,0.5);
-	padding-top:48%;
-	font-size:48px;
+	padding-top:36%;
+	font-size:28px;
 	text-align:center;
 	display:none;
 }
 
+#gameOver h1 {
+	line-height:78px;
+	font-size: 96px;
+
+}
+#scoreValue {
+	font-size: 48px;
+}
 /*
 #root
 {
