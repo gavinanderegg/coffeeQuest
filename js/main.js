@@ -57,7 +57,7 @@ var main = {
         createMap();
         
         this.cursors = game.input.keyboard.createCursorKeys();
-        this.player = game.add.sprite(Config.squareSide, Config.squareSide, 'player');
+        this.player = game.add.sprite(0, 0, 'player');
     },
     
     update: function() {
