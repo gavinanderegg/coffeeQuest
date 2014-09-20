@@ -25,7 +25,7 @@ var createMap = function() {
     
     for (x = 0; x < Map.width; x++) {
         var tileRow = [];
-        var fogRow = []
+        var fogRow = [];
         
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
@@ -74,7 +74,7 @@ var main = {
         if (this.cursors.right.isDown) {
             if (Config.keyState.right) {
                 Config.keyState.right = false;
-                State.changeLocation(1,0)
+                State.changeLocation(1,0);
             }
         }
         
@@ -87,7 +87,7 @@ var main = {
         if (this.cursors.left.isDown) {
             if (Config.keyState.left) {
                 Config.keyState.left = false;
-                State.changeLocation(-1,0)
+                State.changeLocation(-1,0);
             }
         }
         
@@ -100,7 +100,7 @@ var main = {
         if (this.cursors.up.isDown) {
             if (Config.keyState.up) {
                 Config.keyState.up = false;
-                State.changeLocation(0,-1)
+                State.changeLocation(0,-1);
             }
         }
         
@@ -113,7 +113,7 @@ var main = {
         if (this.cursors.down.isDown) {
             if (Config.keyState.down) {
                 Config.keyState.down = false;
-                State.changeLocation(0,1)
+                State.changeLocation(0,1);
             }
         }
         
@@ -177,13 +177,13 @@ var State = {
         moved = false;
 
         if (modx && newX > -1 && newX < Config.windowSize.width) {
-            main.player.position.x = newX
+            main.player.position.x = newX;
             State.playerX += modx;
-            moved = true
+            moved = true;
         }
 
         if (mody && newY > -1 && newY < Config.windowSize.height) {
-            main.player.position.y = newY
+            main.player.position.y = newY;
             State.playerY += mody;
             moved = true;
         }
@@ -191,12 +191,12 @@ var State = {
         // fire tile event
         
         var unfog = function(baseX, baseY) {
-            if (typeof(Map.fog[baseX]) != 'undefined') {
-                if (typeof(Map.fog[baseX][baseY]) != 'undefined') {
+            if (Map.fog[baseX] !== undefined) {
+                if (Map.fog[baseX][baseY] !== undefined) {
                     Map.fog[baseX][baseY].destroy();
                 }
             }
-        }
+        };
         
         _.each([tileX - 1, tileX, tileX + 1], function(element, index, list) {
             var cx = element;
@@ -207,7 +207,12 @@ var State = {
         });
         
         if (moved) {
-            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) )
+            if (newX === (Config.windowSize.height - Config.squareSide) &&
+                newY === (Config.windowSize.width - Config.squareSide)) {
+                console.log('Next!');
+            }
+            
+            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
         }
     }
 };
@@ -240,7 +245,7 @@ var Event = {
     create: function(name) {
         
         var ev = this.events[name];
-        if (!ev) return false;
+        if (!ev) { return false; }
         var msg = ev.run();
 
         var err = [];
@@ -253,10 +258,8 @@ var Event = {
             });
             return err;
         }
-        else {
-            UI.message(msg, '', ev.name);
-        }
-
+        
+        UI.message(msg, '', ev.name);
         UI.update();
 
     },
