@@ -92,9 +92,6 @@ var Map = {
     width: 15,
     height: 15,
 
-
-
-
 }
 
 var State = {
@@ -134,7 +131,7 @@ var Event = {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
             }
-        }
+        },
         sale: {
             name: "Sale",
             desc: "You sold it!",
@@ -166,9 +163,13 @@ var Event = {
 var Tile = {
 
     sprites: {
-        road:
+        street: "img/tile-street.png",
+        building: "img/tile-building.png",
     },
 
+    create: function(name, x, y) {
+        
+    }
 
 
 }
