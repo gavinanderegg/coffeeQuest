@@ -37,10 +37,7 @@ var setupMap = function() {
             var tile = _.sample(_.pairs(TileTypes));
             
             if (_.random(1,100) > 80) {
-                tile = ["wall", {
-                    'sprite': 'tileWall',
-                    'events': []
-                }];
+                tile = Map.wall;
             }
 
             var choice = _.random(85)
@@ -56,9 +53,17 @@ var setupMap = function() {
             else {
                 tile = ['sale', TileTypes['sale']];
             }
+            
+            if ((x === 0 && y === 0) || (x === Map.height - 1 && y === Map.height - 1)) {
+                tile = ["street", {
+                    'sprite': 'tileStreet',
+                    'events': []
+                }];
+            }
+            
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
-
+            
             tileRow.push({
                 type: tile[0],
                 sprite: sprite
@@ -92,8 +97,6 @@ var main = {
 
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
-        State.changeTile(0, 0, 'street');
-        State.changeTile(Map.width - 1, Map.height - 1, 'street');
         State.changeLocation(0,0);
     },
 
@@ -214,7 +217,7 @@ var State = {
         }
     },
 
-    changeTile: function(x, y, tiletype) {
+    changeTile: function(x, y, tiletype, hide) {
         Map.tiles[x][y].sprite.kill();
 
         var tile = TileTypes[tiletype];
@@ -225,18 +228,20 @@ var State = {
     },
 
     changeLocation: function(modx, mody) {
-        // if Map.tiles[baseX][baseY]
-        
-        if (this.errors.length) {
-            return;
-        }
-
         newX = main.player.position.x + Config.squareSide*modx;
         newY = main.player.position.y + Config.squareSide*mody;
         tileX = newX / Config.squareSide;
         tileY = newY / Config.squareSide;
         moved = false;
-
+        
+        
+        
+        // if (Map.tiles[tileX][tileY])
+        
+        if (this.errors.length) {
+            return;
+        }
+        
         moved = (modx && newX > -1 && newX < Config.windowSize.width) || (mody && newY > -1 && newY < Config.windowSize.height);
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
