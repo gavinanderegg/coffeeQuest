@@ -10,7 +10,25 @@ var Config = {
 
 
 var createMap = function() {
-    // Fill the map with a two-dimensional array of tiles. Pre-populate 
+    // Fill the map with a two-dimensional array of tiles. Pre-populate
+    
+    for (x = 0; x < Map.width; x++) {
+        for (y = 0; y < Map.height; y++) {
+            var tileRow = [];
+            
+            tileRow.push({
+                type: 'road'
+            });
+        }
+        
+        Map.tiles.push(tileRow);
+    }
+};
+
+var Map = {
+    width: 15,
+    height: 15,
+    tiles: []
 };
 
 
@@ -97,12 +115,7 @@ var Messages = {
     notEnoughCaffeine: "You're out of caffeine!",
 };
 
-var Map = {
 
-    width: 15,
-    height: 15,
-
-}
 
 var State = {
 
