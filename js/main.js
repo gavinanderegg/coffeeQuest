@@ -9,7 +9,8 @@ var Config = {
     'windowSize': {
         'width': 504,
         'height': 504 
-    }
+    },
+    'textSpeed': 150
 };
 
 var Map = {
@@ -163,24 +164,26 @@ var State = {
     
         newX = main.player.position.x + Config.squareSide*modx;
         newY = main.player.position.y + Config.squareSide*mody;
+        moved = false;
 
-        if (newX > -1 && newX < Config.windowSize.width) {
+        if (modx && newX > -1 && newX < Config.windowSize.width) {
             main.player.position.x = newX
             State.playerX += modx;
+            moved = true
         }
 
-        if (newY > -1 && newY < Config.windowSize.height) {
+        if (mody && newY > -1 && newY < Config.windowSize.height) {
             main.player.position.y = newY
             State.playerY += mody;
+            moved = true;
         }
 
         // fire tile event
         
-        console.log( TileTypes[Map.tiles[0][0]).type].events )
+        if (moved) {
+            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) )
+        }
 
-        //var eventResult = Event.create(
-            
-        
     }
 
 };
@@ -206,7 +209,7 @@ var Event = {
         },
         street: {
             name: "Street",
-            desc: "You walk down the street",
+            desc: "You walk down the street.",
             run: function() {}
         },
     },
@@ -228,7 +231,7 @@ var Event = {
             return err;
         }
         else {
-            message(ev.name +" : "+ ev.desc);
+            message(ev.desc, '', ev.name);
         }
 
     },
@@ -262,13 +265,17 @@ var TileTypes = {
     }
 };
 
-function message(msg, type) {
+function message(msg, type, title) {
 
     var li = $('<li></li>').text(msg);
+    if (title) {
+        li.prepend('<span>'+ title +'</span>')
+    }
     if (type) {
         li.addClass(type);
     }
-    $('#messages ul').append(li);
+    $('#messages ul').prepend(li);
+    li.slideUp(0).slideDown(Config.textSpeed);
 
 }
 

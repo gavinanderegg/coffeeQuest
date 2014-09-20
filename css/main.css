@@ -26,8 +26,24 @@ body
 	width: 504px;
 	height: 200px;
 	margin: auto;
-	border: 1px solid #333;
+	background-color:rgba(0,0,0,0.67);
 	overflow: auto;
+	color:#ddd;
+	padding:12px;
+	font-size:10px;
+}
+
+li { 
+	list-style:none;
+	height:16px;
+}
+
+#messages span {
+	width:120px;
+	color:#fff;
+	font-size:12px;
+	display:block;
+	float:left;
 }
 
 
