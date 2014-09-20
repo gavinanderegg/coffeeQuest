@@ -272,7 +272,9 @@ var Event = {
         
         var ev = this.events[name];
         if (!ev) { return false; }
+        
         var msg = ev.run();
+        UI.update();
 
         var err = [];
 
@@ -286,7 +288,7 @@ var Event = {
         }
 
         UI.message(msg, '', ev.name);
-        UI.update();
+        
 
     },
 
