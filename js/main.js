@@ -23,24 +23,51 @@ var main = {
                 Config.keyState.right = false;
                 this.player.position.x += this.player.width;
             }
-            
-            if (this.cursors.right.isUp) {
-                if (!Config.keyState.right) {
-                    Config.keyState.right = true;
-                }
+        }
+        
+        if (this.cursors.right.isUp) {
+            if (!Config.keyState.right) {
+                Config.keyState.right = true;
             }
         }
         
         if (this.cursors.left.isDown) {
-            this.player.position.x -= this.player.width;
+            if (Config.keyState.left) {
+                Config.keyState.left = false;
+                this.player.position.x -= this.player.width;
+            }
+        }
+        
+        if (this.cursors.left.isUp) {
+            if (!Config.keyState.left) {
+                Config.keyState.left = true;
+            }
         }
         
         if (this.cursors.up.isDown) {
-            this.player.position.y -= this.player.height;
+            if (Config.keyState.up) {
+                Config.keyState.up = false;
+                this.player.position.y -= this.player.width;
+            }
+        }
+        
+        if (this.cursors.up.isUp) {
+            if (!Config.keyState.up) {
+                Config.keyState.up = true;
+            }
         }
         
         if (this.cursors.down.isDown) {
-            this.player.position.y += this.player.height;
+            if (Config.keyState.down) {
+                Config.keyState.down = false;
+                this.player.position.y += this.player.width;
+            }
+        }
+        
+        if (this.cursors.down.isUp) {
+            if (!Config.keyState.down) {
+                Config.keyState.down = true;
+            }
         }
     },
 };
