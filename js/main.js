@@ -14,10 +14,11 @@ var Config = {
 };
 
 var Map = {
-    width: 15,
-    height: 15,
+    width: 12,
+    height: 12,
     tiles: [],
-    fog: []
+    fog: [],
+    nextSign: null
 };
 
 var createMap = function() {
@@ -43,6 +44,8 @@ var createMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
+    
+    Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
 
@@ -272,7 +275,8 @@ var Tile = {
     sprites: {
         tileStreet: "img/tile-street.png",
         tileBuilding: "img/tile-building.png",
-        tileFog: "img/tile-fog.png"
+        tileFog: "img/tile-fog.png",
+        sign: "img/sign.png"
     },
 
     preload: function(game) {
