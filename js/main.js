@@ -22,15 +22,14 @@ var createMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
     
     for (x = 0; x < Map.width; x++) {
+        var tileRow = [];
+        
         for (y = 0; y < Map.height; y++) {
-            var tileRow = [];
-            
             var tile = _.sample(_.pairs(TileTypes));
             
             tileRow.push({
                 type: tile[0]
             });
-            
             game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
         }
         
@@ -57,7 +56,7 @@ var main = {
         createMap();
         
         this.cursors = game.input.keyboard.createCursorKeys();
-        this.player = game.add.sprite(Config.squareSide, Config.squareSide, 'player');
+        this.player = game.add.sprite(0, 0, 'player');
     },
     
     update: function() {
@@ -218,7 +217,7 @@ var Event = {
         if (!ev) return false;
         ev.run();
 
-        var err = []
+        var err = [];
 
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
@@ -226,7 +225,7 @@ var Event = {
                 err.push(i);
                 State.errors.pop(i);
             });
-            return err
+            return err;
         }
         else {
             message(ev.name +" : "+ ev.desc);
