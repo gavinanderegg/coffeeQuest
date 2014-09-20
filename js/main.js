@@ -70,7 +70,7 @@ var main = {
         // This function will be executed at the beginning
         // That's where we load the game's assets
 
-        game.load.image('player', '/img/player.png');
+        game.load.image('player', 'img/player.png');
         Tile.preload(game);
     },
 
