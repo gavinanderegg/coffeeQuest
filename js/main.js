@@ -19,7 +19,11 @@ var Map = {
     height: 12,
     tiles: [],
     fog: [],
-    nextSign: null
+    nextSign: null,
+    wall: ["wall", {
+        'sprite': 'tileWall',
+        'events': []
+    }]
 };
 
 var setupMap = function() {
@@ -31,6 +35,17 @@ var setupMap = function() {
 
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
+            
+            if (_.random(1,100) > 80) {
+                tile = ["wall", {
+                    'sprite': 'tileWall',
+                    'events': []
+                }];
+            }
+            
+            if (x === 0 && y === 0) {
+                State.changeTile(0, 0, 'street');
+            }
 
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
@@ -201,6 +216,8 @@ var State = {
     },
 
     changeLocation: function(modx, mody) {
+        // if Map.tiles[baseX][baseY]
+        
         if (this.errors.length) {
             return;
         }
@@ -339,6 +356,7 @@ var Tile = {
         tileBuilding: "img/tile-building.png",
         tileMoney: "img/tile-cash.png",
         tileFog: "img/tile-fog.png",
+        tileWall: "img/tile-wall.png",
         sign: "img/sign.png"
     },
 
