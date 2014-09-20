@@ -97,6 +97,13 @@ var Messages = {
     notEnoughCaffeine: "You're out of caffeine!",
 };
 
+var Map = {
+
+    width: 15,
+    height: 15,
+
+}
+
 var State = {
 
     money: 10,
@@ -118,7 +125,8 @@ var State = {
     },
 
     changeLocation: function(modx, mody) {
-        main.player.position
+        main.player.position.x += squareSide*modx;
+        main.player.position.y += squareSide*mody;
     }
 
 };
@@ -132,6 +140,14 @@ var Event = {
             run: function() {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
+            }
+        },
+        sale: {
+            name: "Sale",
+            desc: "You sold it!",
+            run: function() {
+                State.changeMoney(50);
+                State.changeCaffeine(-2);
             }
         }
     },
@@ -154,6 +170,19 @@ var Event = {
     }
 };
 
+var Tile = {
+
+    sprites: {
+        street: "img/tile-street.png",
+        building: "img/tile-building.png",
+    },
+
+    create: function(name, x, y) {
+        
+    }
+
+
+}
 
 var game = new Phaser.Game(400, 450, Phaser.AUTO, 'coffee');
 game.state.add('main', main);
