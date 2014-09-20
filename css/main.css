@@ -68,6 +68,7 @@ li {
 	float:left;
 	padding-right:12px;
 	text-align:right;
+	margin-top: -3px;
 }
 
 .error {

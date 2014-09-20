@@ -16,7 +16,8 @@ var Config = {
 var Map = {
     width: 15,
     height: 15,
-    tiles: []
+    tiles: [],
+    fog: []
 };
 
 var createMap = function() {
@@ -24,6 +25,7 @@ var createMap = function() {
     
     for (x = 0; x < Map.width; x++) {
         var tileRow = [];
+        var fogRow = []
         
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
@@ -31,13 +33,16 @@ var createMap = function() {
             tileRow.push({
                 type: tile[0]
             });
+            
             game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
+            var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
+            
+            fogRow.push(tileFog);
         }
         
         Map.tiles.push(tileRow);
+        Map.fog.push(fogRow);
     }
-    
-    
 };
 
 
@@ -58,6 +63,8 @@ var main = {
         
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
+        
+        State.changeLocation(0,0);
     },
     
     update: function() {
@@ -162,9 +169,11 @@ var State = {
         if (this.errors.length) {
             return;
         }
-    
+        
         newX = main.player.position.x + Config.squareSide*modx;
         newY = main.player.position.y + Config.squareSide*mody;
+        tileX = newX / Config.squareSide;
+        tileY = newY / Config.squareSide;
         moved = false;
 
         if (modx && newX > -1 && newX < Config.windowSize.width) {
@@ -181,12 +190,26 @@ var State = {
 
         // fire tile event
         
+        var unfog = function(baseX, baseY) {
+            if (typeof(Map.fog[baseX]) != 'undefined') {
+                if (typeof(Map.fog[baseX][baseY]) != 'undefined') {
+                    Map.fog[baseX][baseY].destroy();
+                }
+            }
+        }
+        
+        _.each([tileX - 1, tileX, tileX + 1], function(element, index, list) {
+            var cx = element;
+            _.each([tileY - 1, tileY, tileY + 1], function(element, index, list) {
+                var cy = element;
+                unfog(cx, cy);
+            });
+        });
+        
         if (moved) {
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) )
         }
-
-    },
-
+    }
 };
 
 var Event = {
@@ -245,6 +268,7 @@ var Tile = {
     sprites: {
         tileStreet: "img/tile-street.png",
         tileBuilding: "img/tile-building.png",
+        tileFog: "img/tile-fog.png"
     },
 
     preload: function(game) {
