@@ -26,6 +26,20 @@ var Map = {
     }]
 };
 
+var Dice = {
+    roll: function(num, size) {
+        if (arguments.length < 2) {
+            size = num;
+            num = 1;
+        }
+        var sum = 0;
+        _.times(num, function() {
+            sum += _.random(1, size);
+        });
+        return sum;
+    }
+};
+
 var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
 
@@ -325,26 +339,27 @@ var Event = {
         coffee: {
             name: "Coffee shop",
             run: function(event) {
-                State.changeMoney(-2);
-                State.changeCaffeine(3);
+                State.changeMoney(-5);
+                State.changeCaffeine(5);
                 State.changeTile(event.x, event.y, "closed");
-                return "Bought a coffee! -$2 , +3 caffeine";
+                return "Bought a coffee! -$5 , +5 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
             run: function(event) {
-                State.changeMoney(-8);
-                State.changeCaffeine(10);
+                State.changeMoney(-12);
+                State.changeCaffeine(15);
                 State.changeTile(event.x, event.y, "closed");
-                return "Bought an espresso! -$8 , +10 caffeine";
+                return "Bought an espresso! -$12 , +15 caffeine";
             }
         },
         sale: {
             name: "Sale",
             run: function(event) {
-                var money = _.random(50,500)
-                var caffeine = Math.floor(money / 50)
+                var money = Dice.roll(5,6) * 10;
+                var caffeine = Math.floor(money / 20);
+                console.log(caffeine)
                 State.changeMoney(money);
                 State.changeCaffeine(-caffeine);
                 State.changeTile(event.x, event.y, "street");
@@ -354,10 +369,10 @@ var Event = {
         taxes: {
             name: "Taxes",
             run: function(event) {
-                var money = Math.floor(_.random(5,10) * State.money / 100)
+                var money = Math.floor(_.random(5,10) * State.money / 100);
                 State.changeMoney(-money);
                 State.changeTile(event.x, event.y, "street");
-                return "You have to pay tax! -$"+ money;
+                return "Had to pay tax! -$" + money; 
             }
         },
         street: {
