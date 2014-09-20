@@ -8,6 +8,11 @@ var Config = {
     }
 };
 
+var Map = {
+    width: 15,
+    height: 15,
+    tiles: []
+};
 
 var createMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
@@ -16,19 +21,19 @@ var createMap = function() {
         for (y = 0; y < Map.height; y++) {
             var tileRow = [];
             
+            
+            
             tileRow.push({
-                type: 'road'
+                type: 'street'
             });
+            
+            game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileStreet');
         }
         
         Map.tiles.push(tileRow);
     }
-};
-
-var Map = {
-    width: 15,
-    height: 15,
-    tiles: []
+    
+    
 };
 
 
@@ -38,12 +43,14 @@ var main = {
         // That's where we load the game's assets
         
         game.load.image('player', '/img/player.png');
-        Tile.preload(game)
+        Tile.preload(game);
     },
     
     create: function() {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
+        
+        createMap();
         
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(Config.squareSide, Config.squareSide, 'player');
