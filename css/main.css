@@ -19,6 +19,28 @@ body
 	padding:10px
 }
 
+#status {
+	background-color:#000;
+	height:64px;
+	color:#fff;
+}
+
+#status span {
+	position: absolute;
+	margin-top: 22px;
+	font-size:18px;
+}
+
+#status li {
+	float:left;
+	width:33%;
+}
+
+#status .icon {
+	width:48px;
+	height:48px;
+	padding:8px;
+}
 
 #messages
 {
@@ -35,7 +57,7 @@ body
 
 li { 
 	list-style:none;
-	height:16px;
+	height:20px;
 }
 
 #messages span {
@@ -48,8 +70,36 @@ li {
 	text-align:right;
 }
 
+.error {
+	color:#D11;
+}
 
+.indicator {
+	margin-top:-18px;
+}
 
+.level {
+	float: left;
+	padding: 24px 12px 0 0;
+	color:#aaa;
+	font-size:14px;
+}
+
+.doubleSize {
+	-ms-transform: scale(2);
+    -webkit-transform: scale(2);
+    transform: scale(2);
+    margin-top:-80px;
+    -webkit-transition: margin 1.2s, opacity 3s;
+    transition: margin 1.2s, opacity 3s;
+    -webkit-text-shadow: 4px 6px 12px 2px rgba(0,0,0,0.73);
+	-moz-text-shadow: 4px 6px 12px 2px rgba(0,0,0,0.73);
+	text-shadow: 4px 6px 12px 2px rgba(0,0,0,0.73);
+	opacity:0;
+}
+
+.pos { color:green!important; }
+.neg { color:red!important; }
 
 /*
 #root

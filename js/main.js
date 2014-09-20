@@ -130,6 +130,7 @@ var State = {
     caffeine: 100,
     playerX: 0,
     playerY: 0,
+    level: 1,
 
     errors: [],
 
@@ -184,7 +185,7 @@ var State = {
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) )
         }
 
-    }
+    },
 
 };
 
@@ -201,7 +202,6 @@ var Event = {
         },
         sale: {
             name: "Sale",
-            desc: "You sold it!",
             run: function() {
                 State.changeMoney(50);
                 State.changeCaffeine(-2);
@@ -224,15 +224,17 @@ var Event = {
 
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
-                message(i, 'error', ev.name);
+                UI.message(i, 'error', ev.name);
                 err.push(i);
                 State.errors.pop(i);
             });
             return err;
         }
         else {
-            message(msg, '', ev.name);
+            UI.message(msg, '', ev.name);
         }
+
+        UI.update();
 
     },
 
@@ -265,21 +267,41 @@ var TileTypes = {
     }
 };
 
-function message(msg, type, title) {
+var UI = {
 
-    var li = $('<li></li>').text(msg);
-    if (title) {
-        li.prepend('<span>'+ title +'</span>')
+    message: function(msg, type, title) {
+
+        var li = $('<li></li>').text(msg);
+        if (title) {
+            li.prepend('<span>'+ title +'</span>')
+        }
+        if (type) {
+            li.addClass(type);
+        }
+        $('#messages ul').prepend(li);
+        li.slideUp(0).slideDown(Config.textSpeed);
+    },
+
+    update: function() {
+        Effects.updateValue('#moneyValue', State.money)
+        Effects.updateValue('#caffeineValue', State.caffeine)
+        Effects.updateValue('#levelValue', State.level)
+    },
+
+    start: function() {
+        $('#moneyValue').text(State.money);
+        $('#caffeineValue').text(State.caffeine);
+        $('#levelValue').text(State.level);
     }
-    if (type) {
-        li.addClass(type);
-    }
-    $('#messages ul').prepend(li);
-    li.slideUp(0).slideDown(Config.textSpeed);
 
 }
 
 var game = new Phaser.Game(Config.windowSize.width, Config.windowSize.height, Phaser.AUTO, 'coffee');
-game.state.add('main', main);
-game.state.start('main');
 
+$(function() {
+    
+    game.state.add('main', main);
+    game.state.start('main');
+    UI.start();
+
+});
