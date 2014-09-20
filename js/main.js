@@ -25,13 +25,13 @@ var createMap = function() {
         for (y = 0; y < Map.height; y++) {
             var tileRow = [];
             
-            
+            var tile = _.sample(_.pairs(TileTypes));
             
             tileRow.push({
-                type: 'street'
+                type: tile[0]
             });
             
-            game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileStreet');
+            game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
         }
         
         Map.tiles.push(tileRow);
@@ -219,6 +219,18 @@ var Tile = {
         });
     }
 
+};
+
+
+var TileTypes = {
+    'street': {
+        'sprite': 'tileStreet',
+        'events': []
+    },
+    'building': {
+        'sprite': 'tileBuilding',
+        'events': []
+    }
 };
 
 function message(msg, type) {
