@@ -131,16 +131,28 @@ var State = {
     errors: [],
 
     changeMoney: function(mod) {
-        if (this.errors.length) return
-        if (this.money + mod < 0) this.errors.push(Messages.notEnoughMoney);
-        else this.money += mod;
+        if (this.errors.length) {
+            return;
+        }
+        
+        if (this.money + mod < 0) {
+            this.errors.push(Messages.notEnoughMoney);
+        } else {
+            this.money += mod;
+        }
     },
 
 
     changeCaffeine: function(mod) {
-        if (this.errors.length) return
-        if (this.caffeine + mod < 0) this.errors.push(Messages.notEnoughCaffeine);
-        else this.caffeine += mod;
+        if (this.errors.length) {
+            return;
+        }
+        
+        if (this.caffeine + mod < 0) {
+            this.errors.push(Messages.notEnoughCaffeine);
+        } else {
+            this.caffeine += mod;
+        }
     },
 
     changeLocation: function(modx, mody) {
@@ -173,7 +185,7 @@ var Event = {
 
     create: function(name) {
         
-        var ev = this.events[name]
+        var ev = this.events[name];
         ev.run();
 
         if (State.errors.length) {
@@ -183,7 +195,7 @@ var Event = {
             });
         }
         else {
-            console.log(ev.name +" : "+ ev.desc)
+            console.log(ev.name +" : "+ ev.desc);
         }
 
     }
@@ -199,10 +211,10 @@ var Tile = {
     preload: function(game) {
         $.each(this.sprites, function(i, e) {
             game.load.image(i, e);
-        })
-    },
+        });
+    }
 
-}
+};
 
 var game = new Phaser.Game(400, 450, Phaser.AUTO, 'coffee');
 game.state.add('main', main);
