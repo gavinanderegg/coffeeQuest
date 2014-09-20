@@ -49,13 +49,14 @@ var State = {
     errors: [],
 
     changeMoney: function(mod) {
-        
+        if (this.errors.length) return
         if (this.money + mod < 0) this.errors.push(Messages.notEnoughMoney);
         else this.money += mod;
     },
 
 
     changeCaffeine: function(mod) {
+        if (this.errors.length) return
         if (this.caffeine + mod < 0) this.errors.push(Messages.notEnoughCaffeine);
         else this.caffeine += mod;
     }
@@ -82,7 +83,7 @@ var Event = {
         var ev = this.events[name]
         ev.run();
 
-        if (State.errors) {
+        if (State.errors.length) {
             $.each(State.errors, function(i, e) {
                 console.log(e);
                 State.errors.pop(i);
