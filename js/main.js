@@ -56,22 +56,34 @@ var setupMap = function() {
                     'events': []
                 }];
             }
-
-            var choice = _.random(80)
-            if (choice < 5) {
-                var tile = ['coffee', TileTypes['coffee']];
-            }
-            else if (choice < 7) {
-                var tile = ['espresso', TileTypes['espresso']];
-            }
-            else if (choice < 12) {
-                var tile = ['sale', TileTypes['sale']];
-            }
-            else if (choice < 15) {
-                var tile = ['taxes', TileTypes['taxes']];   
-            }
             else {
-                var tile = ['street', TileTypes['street']];      
+                var choice = _.random(85)
+                if (choice < 5) {
+                    var tile = ['coffee', TileTypes['coffee']];
+                }
+                else if (choice < 7) {
+                    var tile = ['espresso', TileTypes['espresso']];
+                }
+                else if (choice < 12) {
+                    var tile = ['sale', TileTypes['sale']];
+                }
+                else if (choice < 15) {
+                    var tile = ['taxes', TileTypes['taxes']];   
+                }
+                else {
+                    var tile = ['street', TileTypes['street']];      
+                }
+            }
+
+            if (_.random(1,100) > 80) {
+                tile = Map.wall;
+            }
+
+            if ((x === 0 && y === 0) || (x === Map.height - 1 && y === Map.height - 1)) {
+                tile = ["street", {
+                    'sprite': 'tileStreet',
+                    'events': []
+                }];
             }
 
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
@@ -88,7 +100,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-
+    
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -110,8 +122,6 @@ var main = {
 
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
-        State.changeTile(0, 0, 'street');
-        State.changeTile(Map.width - 1, Map.height - 1, 'street');
         State.changeLocation(0,0);
     },
 
@@ -232,28 +242,29 @@ var State = {
         }
     },
 
-    changeTile: function(x, y, tiletype) {
-        Map.tiles[x][y].sprite.kill();
-
+    changeTile: function(x, y, tiletype, hide) {
         var tile = TileTypes[tiletype];
         Map.tiles[x][y].type = tiletype;
-        Map.tiles[x][y].sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile.sprite);
-
-        main.player.bringToTop();
+        Map.tiles[x][y].sprite.loadTexture(tile.sprite);
     },
 
     changeLocation: function(modx, mody) {
-        // if Map.tiles[baseX][baseY]
-
-        if (this.errors.length) {
-            return;
-        }
-
         newX = main.player.position.x + Config.squareSide*modx;
         newY = main.player.position.y + Config.squareSide*mody;
         tileX = newX / Config.squareSide;
         tileY = newY / Config.squareSide;
         moved = false;
+
+        if (Map.tiles[tileX][tileY].type === 'wall') {
+            UI.message("You bump into a wall!", 'error', 'Ouch!');
+            modx = 0;
+            mody = 0;
+            newX = main.player.position.x + Config.squareSide;
+            newY = main.player.position.y + Config.squareSide;
+            tileX = newX / Config.squareSide;
+            tileY = newY / Config.squareSide;
+            moved = false;
+        }
 
         moved = (modx && newX > -1 && newX < Config.windowSize.width) || (mody && newY > -1 && newY < Config.windowSize.height);
         var unfog = function(baseX, baseY) {
@@ -287,7 +298,7 @@ var State = {
                     State.changeLocation(0,0);
                     UI.update();
             }
-        }
+        };
 
         var setupTileEvent = function() {
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
