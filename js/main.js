@@ -90,6 +90,30 @@ var setupMap = function() {
         Map.fog.push(fogRow);
     }
     
+    // make sure there's at least one route
+    route = {x: 0, y: 0};
+    for (x = 0; x < Map.width; x++) {
+        for (y = 0; y < Map.height; y++) {
+            if (route.x == (Map.width - 1) && route.y == (Map.height - 1)) {
+                continue;
+            }
+            
+            if (_.random(1, 2) > 1) {
+                if (route.x < Map.width - 1) {
+                    route.x += 1;
+                }
+            } else {
+                if (route.y < Map.width - 1) {
+                    route.y += 1;
+                }
+            }
+            
+            if (Map.tiles[route.x][route.y].type === 'wall') {
+                State.changeTile(route.x, route.y, 'street');
+            }
+        }
+    }
+    
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
