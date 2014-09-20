@@ -68,10 +68,10 @@ var setupMap = function() {
                     var tile = ['sale', TileTypes['sale']];
                 }
                 else if (choice < 15) {
-                    var tile = ['taxes', TileTypes['taxes']];   
+                    var tile = ['taxes', TileTypes['taxes']];
                 }
                 else {
-                    var tile = ['street', TileTypes['street']];      
+                    var tile = ['street', TileTypes['street']];
                 }
             }
 
@@ -100,7 +100,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-    
+
     // make sure there's at least one route
     route = {x: 0, y: 0};
     for (x = 0; x < Map.width; x++) {
@@ -108,7 +108,7 @@ var setupMap = function() {
             if (route.x == (Map.width - 1) && route.y == (Map.height - 1)) {
                 continue;
             }
-            
+
             if (_.random(1, 2) > 1) {
                 if (route.x < Map.width - 1) {
                     route.x += 1;
@@ -118,13 +118,13 @@ var setupMap = function() {
                     route.y += 1;
                 }
             }
-            
+
             if (Map.tiles[route.x][route.y].type === 'wall') {
                 State.changeTile(route.x, route.y, 'street');
             }
         }
     }
-    
+
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -263,7 +263,7 @@ var State = {
             this.errors.push(Messages.notEnoughCaffeine);
         }
         this.caffeine += mod;
-        
+
     },
 
     changeTile: function(x, y, tiletype, hide) {
@@ -283,8 +283,8 @@ var State = {
             UI.message("You bump into a wall!", 'error', 'Ouch!');
             modx = 0;
             mody = 0;
-            newX = main.player.position.x + Config.squareSide;
-            newY = main.player.position.y + Config.squareSide;
+            newX = main.player.position.x;
+            newY = main.player.position.y;
             tileX = newX / Config.squareSide;
             tileY = newY / Config.squareSide;
             moved = false;
@@ -313,14 +313,11 @@ var State = {
 
                     setupMap();
 
-                    
                     State.changeLocation(-11, -11);
                     main.player = game.add.sprite(0, 0, 'player');
                     State.level = State.level + 1;
-                    
+
                     State.changeLocation(0,0);
-                    State.playerX = 0
-                    State.playerY = 0
 
                     UI.update();
             }
@@ -350,7 +347,7 @@ var State = {
                     lookForNextLevel()
                     setupTileEvent()
                     State.turn();
-                }, this);    
+                }, this);
                 State.playerX += modx;
             }
 
@@ -362,7 +359,7 @@ var State = {
                     lookForNextLevel()
                     setupTileEvent()
                     State.turn();
-                }, this);  
+                }, this);
                 State.playerY += mody;
             }
 
@@ -411,10 +408,10 @@ var Event = {
                 State.changeMoney(money);
                 State.changeTile(event.x, event.y, "bankClosed");
                 if (money < 0) {
-                    return "Had to pay tax! -$" + money*-1; 
+                    return "Had to pay tax! -$" + money*-1;
                 }
                 else {
-                    return "Collected interest! +$" + money; 
+                    return "Collected interest! +$" + money;
                 }
             }
         },
