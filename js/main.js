@@ -217,10 +217,10 @@ var Event = {
     events: {
         coffee: {
             name: "Coffee",
-            desc: "A much-needed coffee break.",
             run: function() {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
+                return "Bought a coffee! - $2 , +10 caffeine";
             }
         },
         sale: {
@@ -229,12 +229,12 @@ var Event = {
             run: function() {
                 State.changeMoney(50);
                 State.changeCaffeine(-2);
+                return "Made a sale! + $50 , - 2 caffeine";
             }
         },
         street: {
             name: "Street",
-            desc: "You walk down the street.",
-            run: function() {}
+            run: function() { return "Walked down the street"; }
         },
     },
 
@@ -242,20 +242,20 @@ var Event = {
         
         var ev = this.events[name];
         if (!ev) return false;
-        ev.run();
+        var msg = ev.run();
 
         var err = [];
 
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
-                message(i, 'error');
+                message(i, 'error', ev.name);
                 err.push(i);
                 State.errors.pop(i);
             });
             return err;
         }
         else {
-            message(ev.desc, '', ev.name);
+            message(msg, '', ev.name);
         }
 
     },
@@ -286,7 +286,7 @@ var TileTypes = {
     },
     'building': {
         'sprite': 'tileBuilding',
-        'events': []
+        'events': ['coffee']
     }
 };
 
