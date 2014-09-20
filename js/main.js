@@ -15,6 +15,6 @@ var main = {
 	},
 };
 
-var game = new Phaser.Game(400, 450, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(400, 450, Phaser.AUTO, 'coffee');
 game.state.add('main', main);
 game.state.start('main');
