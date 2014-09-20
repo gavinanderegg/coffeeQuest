@@ -105,7 +105,7 @@ var State = {
         if (this.errors.length) return
         if (this.caffeine + mod < 0) this.errors.push(Messages.notEnoughCaffeine);
         else this.caffeine += mod;
-    }
+    },
 
     changeLocation: function(modx, mody) {
         main.player.position
