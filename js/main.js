@@ -50,7 +50,7 @@ var setupMap = function() {
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
 
-            if (_.random(1,100) > 80) {
+            if (0) {//_.random(1,100) > 80) {
                 tile = ["wall", {
                     'sprite': 'tileWall',
                     'events': []
@@ -289,13 +289,15 @@ var State = {
 
                     setupMap();
 
-                    main.player = game.add.sprite(0, 0, 'player');
+                    
                     State.changeLocation(-11, -11);
+                    main.player = game.add.sprite(0, 0, 'player');
+                    State.level = State.level + 1;
+                    
+                    State.changeLocation(0,0);
                     State.playerX = 0
                     State.playerY = 0
 
-                    State.level = State.level + 1;
-                    State.changeLocation(0,0);
                     UI.update();
             }
         };
@@ -378,12 +380,18 @@ var Event = {
             }
         },
         taxes: {
-            name: "Taxes",
+            name: "Bank",
             run: function(event) {
-                var money = Math.floor(_.random(5,10) * State.money / 100);
-                State.changeMoney(-money);
-                State.changeTile(event.x, event.y, "street");
-                return "Had to pay tax! -$" + money; 
+                var money = Math.floor(_.random(5,10) * State.money / 100) * _.random(-1,1);
+                if (money == 0) money = 1;
+                State.changeMoney(money);
+                State.changeTile(event.x, event.y, "bankClosed");
+                if (money < 0) {
+                    return "Had to pay tax! -$" + money; 
+                }
+                else {
+                    return "Collected interest! +$" + money; 
+                }
             }
         },
         street: {
@@ -430,8 +438,9 @@ var Tile = {
         tileEspresso: "img/tile-coffee2.png",
         tileBuilding: "img/tile-building.png",
         tileClosed: "img/tile-closed.png",
+        tileBankClosed: "img/tile-bank-closed.png",
         tileMoney: "img/tile-cash.png",
-        tileTaxes: "img/tile-taxes.png",
+        tileBank: "img/tile-taxes.png",
         tileFog: "img/tile-fog.png",
         tileWall: "img/tile-wall.png",
         sign: "img/sign.png"
@@ -459,12 +468,16 @@ var TileTypes = {
         'sprite': 'tileClosed',
         'events': ['closed']
     },
+    'bankClosed': {
+        'sprite': 'tileBankClosed',
+        'events': ['closed']
+    },
     'espresso': {
         'sprite': 'tileEspresso',
         'events': ['espresso']
     },
     'taxes': {
-        'sprite': 'tileTaxes',
+        'sprite': 'tileBank',
         'events': ['taxes']
     },
     'sale': {
