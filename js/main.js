@@ -35,12 +35,8 @@ var setupMap = function() {
 
         for (y = 0; y < Map.height; y++) {
             var tile = _.sample(_.pairs(TileTypes));
-            
-            if (_.random(1,100) > 80) {
-                tile = Map.wall;
-            }
 
-            var choice = _.random(85)
+            var choice = _.random(85);
             if (choice < 60) {
                 tile = ['street', TileTypes['street']];
             }
@@ -52,6 +48,10 @@ var setupMap = function() {
             }
             else {
                 tile = ['sale', TileTypes['sale']];
+            }
+            
+            if (_.random(1,100) > 80) {
+                tile = Map.wall;
             }
             
             if ((x === 0 && y === 0) || (x === Map.height - 1 && y === Map.height - 1)) {
@@ -75,7 +75,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-    
+
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -234,11 +234,12 @@ var State = {
         tileY = newY / Config.squareSide;
         moved = false;
         
-        
-        
-        // if (Map.tiles[tileX][tileY])
+        if (Map.tiles[tileX][tileY].type === 'wall') {
+            this.errors.push('You bump into a wall!');
+        }
         
         if (this.errors.length) {
+            
             return;
         }
         
@@ -274,7 +275,7 @@ var State = {
                     State.changeLocation(0,0);
                     UI.update();
             }
-        }
+        };
 
         var setupTileEvent = function() {
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
@@ -300,7 +301,7 @@ var State = {
                     lookForNextLevel()
                     State.turn();
                     setupTileEvent()
-                }, this);    
+                }, this);
                 State.playerX += modx;
             }
 
@@ -311,10 +312,10 @@ var State = {
                     lookForNextLevel()
                     State.turn();
                     setupTileEvent()
-                }, this);  
+                }, this);
                 State.playerY += mody;
             }
-          
+
         }
     }
 };
@@ -326,14 +327,14 @@ var Event = {
             name: "Coffee shop",
             run: function() {
                 State.changeMoney(-2);
-                State.changeCaffeine(10);
+                State.changeCaffeine(3);
                 return "Bought a coffee! - $2 , +3 caffeine";
             }
         },
         espresso: {
             name: "Espresso shop",
             run: function() {
-                State.changeMoney(-2);
+                State.changeMoney(-5);
                 State.changeCaffeine(10);
                 return "Bought an espresso! - $5 , +10 caffeine";
             }
@@ -373,7 +374,7 @@ var Event = {
         }
 
         if (msg) {
-            UI.message(msg, '', ev.name);    
+            UI.message(msg, '', ev.name);
         }
     },
 
