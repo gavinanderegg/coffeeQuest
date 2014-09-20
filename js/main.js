@@ -75,18 +75,37 @@ var main = {
         // This function is called 60 times per second
         // It contains the game's logic
         
-        if ( !State.keysLocked ) {
+            if ( State.keysLocked ) return
+
+            if (this.cursors.right.isUp) {
+                if (!Config.keyState.right) {
+                    Config.keyState.right = true;
+                }
+            }
+           
+
+            if (this.cursors.left.isUp) {
+                if (!Config.keyState.left) {
+                    Config.keyState.left = true;
+                }
+            }
+        
+            if (this.cursors.up.isUp) {
+                if (!Config.keyState.up) {
+                    Config.keyState.up = true;
+                }
+            }
+
+            if (this.cursors.down.isUp) {
+                if (!Config.keyState.down) {
+                    Config.keyState.down = true;
+                }
+            }
 
             if (this.cursors.right.isDown) {
                 if (Config.keyState.right) {
                     Config.keyState.right = false;
                     State.changeLocation(1,0);
-                }
-            }
-            
-            if (this.cursors.right.isUp) {
-                if (!Config.keyState.right) {
-                    Config.keyState.right = true;
                 }
             }
             
@@ -97,11 +116,6 @@ var main = {
                 }
             }
             
-            if (this.cursors.left.isUp) {
-                if (!Config.keyState.left) {
-                    Config.keyState.left = true;
-                }
-            }
             
             if (this.cursors.up.isDown) {
                 if (Config.keyState.up) {
@@ -109,26 +123,14 @@ var main = {
                     State.changeLocation(0,-1);
                 }
             }
-            
-            if (this.cursors.up.isUp) {
-                if (!Config.keyState.up) {
-                    Config.keyState.up = true;
-                }
-            }
-            
+           
             if (this.cursors.down.isDown) {
                 if (Config.keyState.down) {
                     Config.keyState.down = false;
                     State.changeLocation(0,1);
                 }
             }
-            
-            if (this.cursors.down.isUp) {
-                if (!Config.keyState.down) {
-                    Config.keyState.down = true;
-                }
-            }
-        }
+        
     },
 };
 
@@ -194,16 +196,8 @@ var State = {
         tileY = newY / Config.squareSide;
         moved = false;
 
-        if (modx && newX > -1 && newX < Config.windowSize.width) {
-            State.playerX += modx;
-            moved = true;
-        }
-
-        if (mody && newY > -1 && newY < Config.windowSize.height) {
-            State.playerY += mody;
-            moved = true;
-        }
-        
+        moved = (modx && newX > -1 && newX < Config.windowSize.width) || (mody && newY > -1 && newY < Config.windowSize.height);
+            
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
                 if (Map.fog[baseX][baseY] !== undefined) {
@@ -215,6 +209,28 @@ var State = {
             }
         };
         
+        var lookForNextLevel = function() {
+            if (newX === (Config.windowSize.height - Config.squareSide) &&
+                newY === (Config.windowSize.width - Config.squareSide)) {
+                    // TODO: tween this?
+                    Map.tiles = [];
+                    Map.fog = [];
+                    
+                    Map.nextSign.destroy();
+                    
+                    setupMap();
+
+                    main.player = game.add.sprite(0, 0, 'player');
+                    State.changeLocation(-11, -11);
+                    State.playerX = 0
+                    State.playerY = 0
+
+                    State.level = State.level + 1;
+                    State.changeLocation(0,0);
+                    UI.update();
+            }
+        }
+
         _.each([tileX - 1, tileX, tileX + 1], function(element, index, list) {
             var cx = element;
             _.each([tileY - 1, tileY, tileY + 1], function(element, index, list) {
@@ -227,29 +243,29 @@ var State = {
             
             State.keysLocked = true;
 
-            tween = game.add.tween(main.player).to( { y: newY, x: newX }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
-            tween.onComplete.add(function(){
-                State.keysLocked = false;
-            }, this);
-
-
-            if (newX === (Config.windowSize.height - Config.squareSide) &&
-                newY === (Config.windowSize.width - Config.squareSide)) {
-                    // TODO: tween this?
-                    Map.tiles = [];
-                    Map.fog = [];
-                    
-                    Map.nextSign.destroy();
-                    
-                    setupMap();
-                    State.changeLocation(-11, -11);
-                    
-                    main.player = game.add.sprite(0, 0, 'player');
-                    State.level = State.level + 1;
-                    UI.update();
+            if (modx) {
+                tween = game.add.tween(main.player).to( { x: newX }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
+                tween.onComplete.add(function(){
+                    State.keysLocked = false;
+                    State.playerX += modx;
+                    lookForNextLevel()
+                }, this);    
             }
             
+            if (mody) {
+                tween = game.add.tween(main.player).to( { y: newY }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
+                tween.onComplete.add(function(){
+                    State.keysLocked = false;
+                    State.playerY += mody;
+                    lookForNextLevel()
+                }, this);    
+            }
+
+
+            
             State.turn();
+
+
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
         }
     }
