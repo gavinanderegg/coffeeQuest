@@ -11,18 +11,22 @@ body
 	font-family: "Lucida Grande", Calibri;
 }
 
+div {
+	box-sizing:border-box;
+}
 #container
 {
 	position: relative;
 	margin: auto;
 	width: 504px;
-	padding:10px
+	padding:10px;
 }
 
 #status {
 	background-color:#000;
 	height:64px;
 	color:#fff;
+	width: 504px;
 }
 
 #status span {
@@ -45,7 +49,7 @@ body
 #messages
 {
 	display: block;
-	width: 480px;
+	width: 504px;
 	height: 160px;
 	margin: auto;
 	background-color:rgba(0,0,0,0.67);
@@ -102,6 +106,17 @@ li {
 
 .pos { color:green!important; }
 .neg { color:red!important; }
+
+#gameOver {
+	position:absolute;
+	width:100%;
+	height:100%;
+	background-color:rgba(200,200,0,0.5);
+	padding-top:48%;
+	font-size:48px;
+	text-align:center;
+	display:none;
+}
 
 /*
 #root

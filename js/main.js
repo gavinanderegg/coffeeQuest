@@ -10,7 +10,8 @@ var Config = {
         'width': 504,
         'height': 504 
     },
-    'textSpeed': 150
+    'textSpeed': 150,
+    'animationSpeed': 150,
 };
 
 var Map = {
@@ -74,55 +75,58 @@ var main = {
         // This function is called 60 times per second
         // It contains the game's logic
         
-        if (this.cursors.right.isDown) {
-            if (Config.keyState.right) {
-                Config.keyState.right = false;
-                State.changeLocation(1,0);
+        if ( !State.keysLocked ) {
+
+            if (this.cursors.right.isDown) {
+                if (Config.keyState.right) {
+                    Config.keyState.right = false;
+                    State.changeLocation(1,0);
+                }
             }
-        }
-        
-        if (this.cursors.right.isUp) {
-            if (!Config.keyState.right) {
-                Config.keyState.right = true;
+            
+            if (this.cursors.right.isUp) {
+                if (!Config.keyState.right) {
+                    Config.keyState.right = true;
+                }
             }
-        }
-        
-        if (this.cursors.left.isDown) {
-            if (Config.keyState.left) {
-                Config.keyState.left = false;
-                State.changeLocation(-1,0);
+            
+            if (this.cursors.left.isDown) {
+                if (Config.keyState.left) {
+                    Config.keyState.left = false;
+                    State.changeLocation(-1,0);
+                }
             }
-        }
-        
-        if (this.cursors.left.isUp) {
-            if (!Config.keyState.left) {
-                Config.keyState.left = true;
+            
+            if (this.cursors.left.isUp) {
+                if (!Config.keyState.left) {
+                    Config.keyState.left = true;
+                }
             }
-        }
-        
-        if (this.cursors.up.isDown) {
-            if (Config.keyState.up) {
-                Config.keyState.up = false;
-                State.changeLocation(0,-1);
+            
+            if (this.cursors.up.isDown) {
+                if (Config.keyState.up) {
+                    Config.keyState.up = false;
+                    State.changeLocation(0,-1);
+                }
             }
-        }
-        
-        if (this.cursors.up.isUp) {
-            if (!Config.keyState.up) {
-                Config.keyState.up = true;
+            
+            if (this.cursors.up.isUp) {
+                if (!Config.keyState.up) {
+                    Config.keyState.up = true;
+                }
             }
-        }
-        
-        if (this.cursors.down.isDown) {
-            if (Config.keyState.down) {
-                Config.keyState.down = false;
-                State.changeLocation(0,1);
+            
+            if (this.cursors.down.isDown) {
+                if (Config.keyState.down) {
+                    Config.keyState.down = false;
+                    State.changeLocation(0,1);
+                }
             }
-        }
-        
-        if (this.cursors.down.isUp) {
-            if (!Config.keyState.down) {
-                Config.keyState.down = true;
+            
+            if (this.cursors.down.isUp) {
+                if (!Config.keyState.down) {
+                    Config.keyState.down = true;
+                }
             }
         }
     },
@@ -141,8 +145,19 @@ var State = {
     playerX: 0,
     playerY: 0,
     level: 1,
+    keysLocked: false,
 
     errors: [],
+
+    turn: function() {
+
+        State.changeCaffeine(-1)
+
+        if ( State.caffeine < 1 ) {
+            UI.gameOver()
+        }
+
+    },
 
     changeMoney: function(mod) {
         if (this.errors.length) {
@@ -180,13 +195,11 @@ var State = {
         moved = false;
 
         if (modx && newX > -1 && newX < Config.windowSize.width) {
-            main.player.position.x = newX;
             State.playerX += modx;
             moved = true;
         }
 
         if (mody && newY > -1 && newY < Config.windowSize.height) {
-            main.player.position.y = newY;
             State.playerY += mody;
             moved = true;
         }
@@ -194,7 +207,10 @@ var State = {
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
                 if (Map.fog[baseX][baseY] !== undefined) {
-                    Map.fog[baseX][baseY].destroy();
+                    tween = game.add.tween(Map.fog[baseX][baseY]).to( { alpha: 0 }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
+                    tween.onComplete.add(function(){
+                        Map.fog[baseX][baseY].destroy();
+                    }, this);
                 }
             }
         };
@@ -208,6 +224,15 @@ var State = {
         });
         
         if (moved) {
+            
+            State.keysLocked = true;
+
+            tween = game.add.tween(main.player).to( { y: newY, x: newX }, Config.animationSpeed, Phaser.Easing.Linear.None, true, 0, 0, false)
+            tween.onComplete.add(function(){
+                State.keysLocked = false;
+            }, this);
+
+
             if (newX === (Config.windowSize.height - Config.squareSide) &&
                 newY === (Config.windowSize.width - Config.squareSide)) {
                     // TODO: tween this?
@@ -224,7 +249,7 @@ var State = {
                     UI.update();
             }
             
-            // fire tile event
+            State.turn();
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
         }
     }
@@ -271,7 +296,7 @@ var Event = {
             });
             return err;
         }
-        
+
         UI.message(msg, '', ev.name);
         UI.update();
 
@@ -323,13 +348,17 @@ var UI = {
         li.slideUp(0).slideDown(Config.textSpeed);
     },
 
+    gameOver: function() {
+        $('#gameOver').fadeIn()
+    },
+
     update: function() {
         Effects.updateValue('#moneyValue', State.money)
         Effects.updateValue('#caffeineValue', State.caffeine)
         Effects.updateValue('#levelValue', State.level)
     },
 
-    start: function() {
+    updateFast: function() {
         $('#moneyValue').text(State.money);
         $('#caffeineValue').text(State.caffeine);
         $('#levelValue').text(State.level);
@@ -343,6 +372,6 @@ $(function() {
     
     game.state.add('main', main);
     game.state.start('main');
-    UI.start();
+    UI.updateFast();
 
 });
