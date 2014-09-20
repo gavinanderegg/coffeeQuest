@@ -19,7 +19,16 @@ var main = {
         // It contains the game's logic
         
         if (this.cursors.right.isDown) {
-            this.player.position.x += this.player.width;
+            if (Config.keyState.right) {
+                Config.keyState.right = false;
+                this.player.position.x += this.player.width;
+            }
+            
+            if (this.cursors.right.isUp) {
+                if (!Config.keyState.right) {
+                    Config.keyState.right = true;
+                }
+            }
         }
         
         if (this.cursors.left.isDown) {
@@ -35,6 +44,16 @@ var main = {
         }
     },
 };
+
+var Config = {
+    'squareSide': 42,
+    'keyState': {
+        'up': true,
+        'down': true,
+        'left': true,
+        'right': true
+    }
+}
 
 var Messages = {
     notEnoughMoney: "You can't afford it!",
