@@ -103,31 +103,39 @@ var main = {
             }
 
             if (this.cursors.right.isDown) {
+                State.keysLocked = false;
                 if (Config.keyState.right) {
                     Config.keyState.right = false;
                     State.changeLocation(1,0);
+                    return;
                 }
             }
             
             if (this.cursors.left.isDown) {
+                State.keysLocked = false;
                 if (Config.keyState.left) {
                     Config.keyState.left = false;
                     State.changeLocation(-1,0);
+                    return;
                 }
             }
             
             
             if (this.cursors.up.isDown) {
+                State.keysLocked = false;
                 if (Config.keyState.up) {
                     Config.keyState.up = false;
                     State.changeLocation(0,-1);
+                    return;
                 }
             }
            
             if (this.cursors.down.isDown) {
+                State.keysLocked = false;
                 if (Config.keyState.down) {
                     Config.keyState.down = false;
                     State.changeLocation(0,1);
+                    return;
                 }
             }
         
