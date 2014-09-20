@@ -15,13 +15,14 @@ var Config = {
 };
 
 var Map = {
-    width: 15,
-    height: 15,
+    width: 12,
+    height: 12,
     tiles: [],
-    fog: []
+    fog: [],
+    nextSign: null
 };
 
-var createMap = function() {
+var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
     
     for (x = 0; x < Map.width; x++) {
@@ -44,6 +45,8 @@ var createMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
+    
+    Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
 
@@ -60,7 +63,7 @@ var main = {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
         
-        createMap();
+        setupMap();
         
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
@@ -200,8 +203,6 @@ var State = {
             State.playerY += mody;
             moved = true;
         }
-
-        // fire tile event
         
         var unfog = function(baseX, baseY) {
             if (Map.fog[baseX] !== undefined) {
@@ -234,10 +235,21 @@ var State = {
 
             if (newX === (Config.windowSize.height - Config.squareSide) &&
                 newY === (Config.windowSize.width - Config.squareSide)) {
-                console.log('Next!');
+                    // TODO: tween this?
+                    Map.tiles = [];
+                    Map.fog = [];
+                    
+                    Map.nextSign.destroy();
+                    
+                    setupMap();
+                    State.changeLocation(-11, -11);
+                    
+                    main.player = game.add.sprite(0, 0, 'player');
+                    State.level = State.level + 1;
+                    UI.update();
             }
-
-            State.turn()
+            
+            State.turn();
             return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
         }
     }
@@ -299,7 +311,8 @@ var Tile = {
     sprites: {
         tileStreet: "img/tile-street.png",
         tileBuilding: "img/tile-building.png",
-        tileFog: "img/tile-fog.png"
+        tileFog: "img/tile-fog.png",
+        sign: "img/sign.png"
     },
 
     preload: function(game) {
