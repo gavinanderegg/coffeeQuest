@@ -61,7 +61,9 @@ var State = {
         else this.caffeine += mod;
     }
 
-
+    changeLocation: function(modx, mody) {
+        main.player.position
+    }
 
 }
 
