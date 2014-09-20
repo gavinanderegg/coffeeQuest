@@ -42,11 +42,20 @@ var setupMap = function() {
                     'events': []
                 }];
             }
-            
-            if (x === 0 && y === 0) {
-                State.changeTile(0, 0, 'street');
-            }
 
+            var choice = _.random(85)
+            if (choice < 60) {
+                tile = ['street', TileTypes['street']];
+            }
+            else if (choice < 70) {
+                tile = ['coffee', TileTypes['coffee']];
+            }
+            else if (choice < 75) {
+                tile = ['espresso', TileTypes['espresso']];
+            }
+            else {
+                tile = ['sale', TileTypes['sale']];
+            }
             var sprite = game.add.sprite(x * Config.squareSide, y * Config.squareSide, tile[1].sprite);
             var tileFog = game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileFog');
 
@@ -61,7 +70,7 @@ var setupMap = function() {
         Map.tiles.push(tileRow);
         Map.fog.push(fogRow);
     }
-
+    
     Map.nextSign = game.add.sprite((x - 1) * Config.squareSide, (y - 1) * Config.squareSide, 'sign');
 };
 
@@ -71,7 +80,7 @@ var main = {
         // This function will be executed at the beginning
         // That's where we load the game's assets
 
-        game.load.image('player', '/img/player.png');
+        game.load.image('player', 'img/player.png');
         Tile.preload(game);
     },
 
@@ -83,7 +92,8 @@ var main = {
 
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(0, 0, 'player');
-
+        State.changeTile(0, 0, 'street');
+        State.changeTile(Map.width - 1, Map.height - 1, 'street');
         State.changeLocation(0,0);
     },
 
@@ -98,7 +108,6 @@ var main = {
                     Config.keyState.right = true;
                 }
             }
-
 
             if (this.cursors.left.isUp) {
                 if (!Config.keyState.left) {
@@ -162,8 +171,8 @@ var Messages = {
 
 var State = {
 
-    money: 10,
-    caffeine: 100,
+    money: 100,
+    caffeine: 10,
     playerX: 0,
     playerY: 0,
     level: 1,
@@ -262,6 +271,10 @@ var State = {
             }
         }
 
+        var setupTileEvent = function() {
+            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
+        }
+
         _.each([tileX - 1, tileX, tileX + 1], function(element, index, list) {
             var cx = element;
             _.each([tileY - 1, tileY, tileY + 1], function(element, index, list) {
@@ -269,6 +282,7 @@ var State = {
                 unfog(cx, cy);
             });
         });
+
 
         if (moved) {
 
@@ -279,7 +293,9 @@ var State = {
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
                     lookForNextLevel()
-                }, this);
+                    State.turn();
+                    setupTileEvent()
+                }, this);    
                 State.playerX += modx;
             }
 
@@ -288,13 +304,12 @@ var State = {
                 tween.onComplete.add(function(){
                     State.keysLocked = false;
                     lookForNextLevel()
-                }, this);
+                    State.turn();
+                    setupTileEvent()
+                }, this);  
                 State.playerY += mody;
             }
-
-            State.turn();
-
-            return Event.create( _.sample(TileTypes[Map.tiles[State.playerX][State.playerY].type].events) );
+          
         }
     }
 };
@@ -303,11 +318,19 @@ var Event = {
 
     events: {
         coffee: {
-            name: "Coffee",
-            run: function(event) {
+            name: "Coffee shop",
+            run: function() {
                 State.changeMoney(-2);
                 State.changeCaffeine(10);
-                return "Bought a coffee! - $2 , +10 caffeine";
+                return "Bought a coffee! - $2 , +3 caffeine";
+            }
+        },
+        espresso: {
+            name: "Espresso shop",
+            run: function() {
+                State.changeMoney(-2);
+                State.changeCaffeine(10);
+                return "Bought an espresso! - $5 , +10 caffeine";
             }
         },
         sale: {
@@ -321,7 +344,7 @@ var Event = {
         },
         street: {
             name: "Street",
-            run: function(event) { return "Walked down the street"; }
+            run: function() { return false; }
         },
     },
 
@@ -344,7 +367,9 @@ var Event = {
             return err;
         }
 
-        UI.message(msg, '', ev.name);
+        if (msg) {
+            UI.message(msg, '', ev.name);    
+        }
     },
 
 };
@@ -353,6 +378,8 @@ var Tile = {
 
     sprites: {
         tileStreet: "img/tile-street.png",
+        tileCoffee: "img/tile-coffee1.png",
+        tileEspresso: "img/tile-coffee2.png",
         tileBuilding: "img/tile-building.png",
         tileMoney: "img/tile-cash.png",
         tileFog: "img/tile-fog.png",
@@ -374,9 +401,13 @@ var TileTypes = {
         'sprite': 'tileStreet',
         'events': ['street']
     },
-    'building': {
-        'sprite': 'tileBuilding',
+    'coffee': {
+        'sprite': 'tileCoffee',
         'events': ['coffee']
+    },
+    'espresso': {
+        'sprite': 'tileEspresso',
+        'events': ['espresso']
     },
     'sale': {
         'sprite': 'tileMoney',
@@ -401,6 +432,8 @@ var UI = {
 
     gameOver: function() {
         $('#gameOver').fadeIn()
+        $('#scoreValue').text(State.level * State.money)
+        State.keysLocked = true
     },
 
     update: function() {
