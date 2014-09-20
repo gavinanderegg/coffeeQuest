@@ -1,15 +1,60 @@
+var Config = {
+    'squareSide': 42,
+    'keyState': {
+        'up': true,
+        'down': true,
+        'left': true,
+        'right': true
+    },
+    'windowSize': {
+        'width': 504,
+        'height': 504 
+    }
+};
+
+var Map = {
+    width: 15,
+    height: 15,
+    tiles: []
+};
+
+var createMap = function() {
+    // Fill the map with a two-dimensional array of tiles. Pre-populate
+    
+    for (x = 0; x < Map.width; x++) {
+        for (y = 0; y < Map.height; y++) {
+            var tileRow = [];
+            
+            
+            
+            tileRow.push({
+                type: 'street'
+            });
+            
+            game.add.sprite(x * Config.squareSide, y * Config.squareSide, 'tileStreet');
+        }
+        
+        Map.tiles.push(tileRow);
+    }
+    
+    
+};
+
+
 var main = {
     preload: function() {
         // This function will be executed at the beginning
         // That's where we load the game's assets
         
         game.load.image('player', '/img/player.png');
-        Tile.preload(game)
+        Tile.preload(game);
     },
     
     create: function() {
         // This function is called after the preload function
         // Here we set up the game, display sprites, etc.
+        
+        createMap();
         
         this.cursors = game.input.keyboard.createCursorKeys();
         this.player = game.add.sprite(Config.squareSide, Config.squareSide, 'player');
@@ -73,31 +118,11 @@ var main = {
     },
 };
 
-var Config = {
-    'squareSide': 42,
-    'keyState': {
-        'up': true,
-        'down': true,
-        'left': true,
-        'right': true
-    },
-    'windowSize': {
-        'width': 504,
-        'height': 504 
-    }
-};
-
 var Messages = {
     notEnoughMoney: "You can't afford it!",
     notEnoughCaffeine: "You're out of caffeine!",
 };
 
-var Map = {
-
-    width: 15,
-    height: 15,
-
-}
 
 var State = {
 
@@ -155,14 +180,12 @@ var Event = {
 
         if (State.errors.length) {
             _.each(State.errors, function(i, e) {
-                console.log(State.errors)
-                message(e, 'error')
+                message(i, 'error')
                 State.errors.pop(i);
-                console.log(State.errors)
             });
         }
         else {
-            console.log(ev.name +" : "+ ev.desc)
+            message(ev.name +" : "+ ev.desc)
         }
 
     }
@@ -177,16 +200,16 @@ var Tile = {
 
     preload: function(game) {
         _.each(this.sprites, function(i, e) {
-            game.load.image(i, e);
+            game.load.image(e, i);
         })
-    },
+    }
 
 }
 
 function message(msg, type) {
 
     var li = $('<li></li>').text(msg)
-    if (type) li.addClass('type')
+    if (type) li.addClass(type)
     $('#messages ul').append(li)
 
 }
