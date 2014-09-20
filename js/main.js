@@ -5,6 +5,10 @@ var Config = {
         'down': true,
         'left': true,
         'right': true
+    },
+    'windowSize': {
+        'width': 504,
+        'height': 504 
     }
 };
 
@@ -114,13 +118,10 @@ var main = {
     },
 };
 
-
-
 var Messages = {
     notEnoughMoney: "You can't afford it!",
     notEnoughCaffeine: "You're out of caffeine!",
 };
-
 
 
 var State = {
@@ -156,6 +157,10 @@ var State = {
     },
 
     changeLocation: function(modx, mody) {
+        if (this.errors.length) {
+            return;
+        }
+        
         main.player.position.x += squareSide*modx;
         main.player.position.y += squareSide*mody;
     }
@@ -189,13 +194,13 @@ var Event = {
         ev.run();
 
         if (State.errors.length) {
-            $.each(State.errors, function(i, e) {
-                console.log(e);
+            _.each(State.errors, function(i, e) {
+                message(i, 'error');
                 State.errors.pop(i);
             });
         }
         else {
-            console.log(ev.name +" : "+ ev.desc);
+            message(ev.name +" : "+ ev.desc);
         }
 
     }
@@ -209,14 +214,24 @@ var Tile = {
     },
 
     preload: function(game) {
-        $.each(this.sprites, function(i, e) {
-            game.load.image(i, e);
+        _.each(this.sprites, function(i, e) {
+            game.load.image(e, i);
         });
     }
 
 };
 
-var game = new Phaser.Game(400, 450, Phaser.AUTO, 'coffee');
+function message(msg, type) {
+
+    var li = $('<li></li>').text(msg);
+    if (type) {
+        li.addClass(type);
+    }
+    $('#messages ul').append(li);
+
+}
+
+var game = new Phaser.Game(Config.windowSize.width, Config.windowSize.height, Phaser.AUTO, 'coffee');
 game.state.add('main', main);
 game.state.start('main');
 
