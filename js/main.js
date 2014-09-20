@@ -26,6 +26,20 @@ var Map = {
     }]
 };
 
+var Dice = {
+    roll: function(num, size) {
+        if (arguments.length < 2) {
+            size = num;
+            num = 1;
+        }
+        var sum = 0;
+        _.times(num, function() {
+            sum += _.random(1, size);
+        });
+        return sum;
+    }
+};
+
 var setupMap = function() {
     // Fill the map with a two-dimensional array of tiles. Pre-populate
 
@@ -342,10 +356,11 @@ var Event = {
         sale: {
             name: "Sale",
             run: function(event) {
-                State.changeMoney(50);
+                var money = Dice.roll(5,6);
+                State.changeMoney(money);
                 State.changeCaffeine(-2);
                 State.changeTile(event.x, event.y, "street");
-                return "Made a sale! + $50 , - 2 caffeine";
+                return "Made a sale! + $" + money + " , - 2 caffeine";
             }
         },
         street: {
