@@ -5,6 +5,7 @@
     <script src="/js/jquery-2.1.1.min.js"></script>
     <script src="/js/underscore.js"></script>
     <script src="/js/phaser.min.js"></script>
+    <script src="/js/ui.js"></script>
     <script src="/js/main.js"></script>
     <link rel="stylesheet" href="/css/main.css" type="text/css" media="screen" title="no title" charset="utf-8">
 </head>
@@ -14,6 +15,11 @@
     <div id="container">
 
         <div id="coffee"></div>
+        <div id="status"><ul>
+            <li><img class="icon" src="img/icon-money.png"><span id="moneyValue">0</span></li>
+            <li><img class="icon" src="img/icon-coffee.png"><span id="caffeineValue">0</span></li>
+            <li><div class="level">LEVEL</div> <span id="levelValue">1</span></li>
+        </ul></div>
         <div id="messages"><ul></ul></div>
 
     </div>
