@@ -2,7 +2,7 @@
 
 ![Game screenshot](http://www.anderegg.ca/coffeeQuest/img/screenshot.png)
 
-Coffee Quest is a web-based game about business and caffeine. You move using the arrow keys, and want to traverse the map from the top-left corner to the bottom-right. Each screen is a new town for you to exploit for monitary gain, but you can't business without caffine! Each deal will drain you of awakehood, and the only cure is more coffee. Coffee costs money, so you must carefully balance your actions to ensure you don't run out of cash or caffine. Financial institutions are tricky: you may gain interest, or lose money from taxation. Eventually you'll run out of energy, but the overall goal is your high score.
+Coffee Quest is a web-based game about business and caffeine. You move using the arrow keys, and want to traverse the map from the top-left corner to the bottom-right. Each screen is a new town for you to exploit for monetary gain, but you can't business without caffeine! Each deal will drain you of awakeness, and the only cure is more coffee. Coffee costs money, so you must carefully balance your actions to ensure you don't run out of cash or caffeine. Financial institutions are tricky: you may gain interest, or lose money from taxation. Eventually you'll run out of energy, but the overall goal is your high score.
 
 [You can play the game here!](http://www.anderegg.ca/coffeeQuest/)
 
